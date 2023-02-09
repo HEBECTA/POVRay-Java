@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package vu.mif.bakalaurinis;
+package Graphics;
 
 /**
  *
@@ -11,7 +11,7 @@ package vu.mif.bakalaurinis;
  */
 public class Point {
     
-    float y, x, z;
+    public float y, x, z;
     
     public Point(float y, float x){
         

@@ -3,12 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package vu.mif.bakalaurinis;
+package IDE;
 
 /**
  *
  * @author GUGU
  */
+import Graphics.Matrix;
+import Graphics.ImageScanner;
+import Graphics.Object3D;
 import java.awt.FlowLayout;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -34,7 +37,6 @@ import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
-
 /**
  *
  * @author gugu
@@ -47,26 +49,24 @@ public class Toolbar extends JToolBar implements ActionListener {
     JButton openButton;
     JButton saveButton;
     JButton closeButton;
-    JButton queueButton;
-    JButton showButton;
-    JButton iniButton;
-    JButton sel_runButton;
-    JButton runButton;
-    JButton pauseButton;
-    JButton trayButton;
+    
+    JButton povRaySceneSettingsBtn;
+    JButton paintedImgBtn;
+    JButton showPixelsBtn;
+    JButton showFinalBtn;
+    JButton refreshBtn;
     
     ImageIcon newIcon;
     ImageIcon openIcon;
     ImageIcon floppyIcon;
     ImageIcon closeIcon;
-    ImageIcon queueIcon;
-    ImageIcon showIcon;
-    ImageIcon iniIcon;
-    ImageIcon sel_runIcon;
-    ImageIcon runIcon;
-    ImageIcon pauseIcon;
-    ImageIcon trayIcon;
     
+    ImageIcon povRaySceneSettingsIcon;
+    ImageIcon paintedImgIcon;
+    ImageIcon showPixelsIcon;
+    ImageIcon showFinalIcon;
+    ImageIcon refreshIcon;
+
     Main mainWindow;
     FileOperation fileHandler;        
     
@@ -83,37 +83,34 @@ public class Toolbar extends JToolBar implements ActionListener {
         openIcon = new ImageIcon("/home/gugu/NetBeansProjects/swing/src/main/java/resources/open.png");
         floppyIcon = new ImageIcon("/home/gugu/NetBeansProjects/swing/src/main/java/resources/floppy.png");
         closeIcon = new ImageIcon("/home/gugu/NetBeansProjects/swing/src/main/java/resources/close.png");
-        queueIcon = new ImageIcon("/home/gugu/NetBeansProjects/swing/src/main/java/resources/queue.png");
-        showIcon = new ImageIcon("/home/gugu/NetBeansProjects/swing/src/main/java/resources/show.png");
-        iniIcon = new ImageIcon("/home/gugu/NetBeansProjects/swing/src/main/java/resources/init.png");
-        sel_runIcon = new ImageIcon("/home/gugu/NetBeansProjects/swing/src/main/java/resources/sourcefile.bmp");
-        runIcon = new ImageIcon("/home/gugu/NetBeansProjects/swing/src/main/java/resources/run.png");
-        pauseIcon = new ImageIcon("/home/gugu/NetBeansProjects/swing/src/main/java/resources/pause.jpg");
-        trayIcon = new ImageIcon("/home/gugu/NetBeansProjects/swing/src/main/java/resources/tray.png");
+        
+        povRaySceneSettingsIcon = new ImageIcon("/home/gugu/NetBeansProjects/swing/src/main/java/resources/queue.png");
+        paintedImgIcon = new ImageIcon("/home/gugu/NetBeansProjects/swing/src/main/java/resources/show.png");
+        showPixelsIcon = new ImageIcon("/home/gugu/NetBeansProjects/swing/src/main/java/resources/sourcefile.bmp");
+        showFinalIcon = new ImageIcon("/home/gugu/NetBeansProjects/swing/src/main/java/resources/run.png");
+        refreshIcon = new ImageIcon("/home/gugu/NetBeansProjects/swing/src/main/java/resources/pause.jpg");
                                     
         newButton = new JButton(new ImageIcon(getScaledImage(newIcon.getImage(), dimensions, dimensions)));
         openButton = new JButton(new ImageIcon(getScaledImage(openIcon.getImage(), dimensions, dimensions)));
         saveButton = new JButton(new ImageIcon(getScaledImage(floppyIcon.getImage(), dimensions, dimensions)));
         closeButton = new JButton(new ImageIcon(getScaledImage(closeIcon.getImage(), dimensions, dimensions)));
-        queueButton = new JButton(new ImageIcon(getScaledImage(queueIcon.getImage(), dimensions, dimensions)));
-        showButton = new JButton(new ImageIcon(getScaledImage(showIcon.getImage(), dimensions, dimensions)));
-        iniButton = new JButton(new ImageIcon(getScaledImage(iniIcon.getImage(), dimensions, dimensions)));
-        sel_runButton = new JButton(new ImageIcon(getScaledImage(sel_runIcon.getImage(), dimensions, dimensions)));
-        runButton = new JButton(new ImageIcon(getScaledImage(runIcon.getImage(), dimensions, dimensions)));
-        pauseButton = new JButton(new ImageIcon(getScaledImage(pauseIcon.getImage(), dimensions, dimensions)));
-        trayButton = new JButton(new ImageIcon(getScaledImage(trayIcon.getImage(), dimensions, dimensions)));
+        
+        povRaySceneSettingsBtn = new JButton(new ImageIcon(getScaledImage(povRaySceneSettingsIcon.getImage(), dimensions, dimensions)));
+        paintedImgBtn = new JButton(new ImageIcon(getScaledImage(paintedImgIcon.getImage(), dimensions, dimensions)));
+        showPixelsBtn = new JButton(new ImageIcon(getScaledImage(showPixelsIcon.getImage(), dimensions, dimensions)));
+        showFinalBtn = new JButton(new ImageIcon(getScaledImage(showFinalIcon.getImage(), dimensions, dimensions)));
+        refreshBtn = new JButton(new ImageIcon(getScaledImage(refreshIcon.getImage(), dimensions, dimensions)));
       
         newButton.setText("New");
         openButton.setText("Open");
         saveButton.setText("Save");
         closeButton.setText("Close");
-        queueButton.setText("Queue");
-        showButton.setText("Show");       
-        iniButton.setText("Ini");      
-        sel_runButton.setText("Sel_Run");        
-        runButton.setText("Run");        
-        pauseButton.setText("Pause");        
-        trayButton.setText("Tray");
+        
+        povRaySceneSettingsBtn.setText("scene");
+        paintedImgBtn.setText("image");       
+        showPixelsBtn.setText("pixels");      
+        showFinalBtn.setText("final");        
+        refreshBtn.setText("refresh");
                 
         newButton.setVerticalTextPosition(SwingConstants.BOTTOM);
         newButton.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -127,50 +124,42 @@ public class Toolbar extends JToolBar implements ActionListener {
         closeButton.setVerticalTextPosition(SwingConstants.BOTTOM);
         closeButton.setHorizontalTextPosition(SwingConstants.CENTER);
         
-        queueButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-        queueButton.setHorizontalTextPosition(SwingConstants.CENTER);
+        povRaySceneSettingsBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
+        povRaySceneSettingsBtn.setHorizontalTextPosition(SwingConstants.CENTER);
         
-        showButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-        showButton.setHorizontalTextPosition(SwingConstants.CENTER);
+        paintedImgBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
+        paintedImgBtn.setHorizontalTextPosition(SwingConstants.CENTER);
         
-        iniButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-        iniButton.setHorizontalTextPosition(SwingConstants.CENTER);
+        showPixelsBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
+        showPixelsBtn.setHorizontalTextPosition(SwingConstants.CENTER);
         
-        sel_runButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-        sel_runButton.setHorizontalTextPosition(SwingConstants.CENTER);
+        showFinalBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
+        showFinalBtn.setHorizontalTextPosition(SwingConstants.CENTER);
         
-        runButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-        runButton.setHorizontalTextPosition(SwingConstants.CENTER);
-        
-        pauseButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-        pauseButton.setHorizontalTextPosition(SwingConstants.CENTER);
-        
-        trayButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-        trayButton.setHorizontalTextPosition(SwingConstants.CENTER);
+        refreshBtn.setVerticalTextPosition(SwingConstants.BOTTOM);
+        refreshBtn.setHorizontalTextPosition(SwingConstants.CENTER);
         
         newButton.addActionListener(this);
         openButton.addActionListener(this);
         saveButton.addActionListener(this);
         closeButton.addActionListener(this);
-        queueButton.addActionListener(this);
-        showButton.addActionListener(this);
-        iniButton.addActionListener(this);
-        sel_runButton.addActionListener(this);
-        runButton.addActionListener(this);
-        pauseButton.addActionListener(this);
-        trayButton.addActionListener(this);
+        
+        povRaySceneSettingsBtn.addActionListener(this);
+        paintedImgBtn.addActionListener(this);
+        showPixelsBtn.addActionListener(this);
+        showFinalBtn.addActionListener(this);
+        refreshBtn.addActionListener(this);
         
         panel.add(newButton);
         panel.add(openButton);
         panel.add(saveButton);
         panel.add(closeButton);
-        panel.add(queueButton);
-        panel.add(showButton);
-        panel.add(iniButton);
-        panel.add(sel_runButton);
-        panel.add(runButton);
-        panel.add(pauseButton);
-        panel.add(trayButton);
+      
+        panel.add(povRaySceneSettingsBtn);
+        panel.add(paintedImgBtn);
+        panel.add(showPixelsBtn);
+        panel.add(showFinalBtn);
+        panel.add(refreshBtn);
         
        
         
@@ -200,8 +189,6 @@ public class Toolbar extends JToolBar implements ActionListener {
             fileHandler.newFile();
             
             mainWindow.tabbedPane.setTitleAt(0, "Untitled !");
-            
-            
         }
         
         else if (cmdText.equals("Open")) {
@@ -253,31 +240,22 @@ public class Toolbar extends JToolBar implements ActionListener {
             
         }
         
-        else if ( cmdText.equals("Queue") ){
+        else if ( cmdText.equals("scene") ){
            
         }
-        else if ( cmdText.equals("Ini") ){
-            
-         
-        }
         
-        else if ( cmdText.equals("Sel_Run") ){
-            
-        }
-        
-        else if ( cmdText.equals("Run") ){
-            
-         
-            
-        }
-        
-        else if ( cmdText.equals("Pause") ){
-            
-            
+        else if ( cmdText.equals("image") ){
 
+            
         }
         
-        else if ( cmdText.equals("Tray") ){
+        else if ( cmdText.equals("pixels") ){
+
+               
+        }
+        
+        else if ( cmdText.equals("final") ){
+            
             
             JFileChooser f = new JFileChooser("C:\\Users\\GUGU\\Pictures\\_kursinis.png");
             
@@ -292,37 +270,8 @@ public class Toolbar extends JToolBar implements ActionListener {
                 image.exportFillPovRay("fill.txt", 0.7f);
                 
                 image.exportPaintedFigure("painted.png");
-                
-                Object3D obj = new Object3D(image.getTriangulatedObject(5), image.width);
-                
-                
-                Matrix transformationMatrix = new Matrix();
-                
-                obj.inflate((image.height + image.width)/2);
-                
-                //transformationMatrix.scale(0.25f, 0.25f, 0.25f);
-                transformationMatrix.rotateX((float)Math.toRadians(180));
-                //transformationMatrix.rotateY((float)Math.toRadians(90));
-                 
-                
-                
-                //obj.transformation(transformationMatrix);
-                //obj.transformationTest(transformationMatrix);
-                
-                //obj.printTriangles();
-                
-                obj.exportPovRay("Flat.txt");
-                obj.exportPovRayTest("FlatTest.txt", 0.5f);
-                
-                obj.exportTriangulated("triangles.txt", 0.2f);
-                
-                //obj.printTrianglesTest();
-                
-                //Object obj2 = new Object(image.getFigurePixels(), image.width, image.width);
-                
-                //obj2.transformation(transformationMatrix);
-                
-                //obj2.exportPovRay("new.txt");
+
+
                
             }
             catch(Exception e){
@@ -331,7 +280,13 @@ public class Toolbar extends JToolBar implements ActionListener {
                 
                 e.printStackTrace();
             }
+            
         }
         
+        else if ( cmdText.equals("refresh") ){
+            
+            mainWindow.refreshTabs();
+            
+        }
     }
 }

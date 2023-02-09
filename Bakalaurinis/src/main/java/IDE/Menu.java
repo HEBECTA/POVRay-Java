@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package vu.mif.bakalaurinis;
+package IDE;
 
 /**
  *
@@ -140,7 +140,7 @@ public class Menu extends JMenuBar implements ActionListener {
                 txt.loadText(scanner.nextLine());
             }
             }
-            catch ( Exception ex) {}
+            catch (Exception ex) {}
             
             mainWindow.tabbedPane.setSelectedComponent(txt);
         }

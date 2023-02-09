@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package vu.mif.bakalaurinis;
+package IDE;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -20,7 +20,7 @@ public class FileOperation {
     
     String fileName;
     
-    FileOperation(String initial_dir){
+    public FileOperation(String initial_dir){
         
         chooser = new JFileChooser(initial_dir);
         //chooser.setCurrentDirectory(new File("."));

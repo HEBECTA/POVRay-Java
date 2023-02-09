@@ -3,8 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package vu.mif.bakalaurinis;
+package Graphics;
 
+import Graphics.Triangle;
+import Graphics.Point;
 import java.io.FileWriter;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -21,7 +23,7 @@ public class Object3D {
    
     Matrix matrix;
     
-    int width;
+    public int width;
     
     public Object3D(LinkedList<LinkedList<Triangle>> triangles, int width){
         

@@ -3,12 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package vu.mif.bakalaurinis;
+package IDE;
 
 /**
  *
  * @author GUGU
  */
+import Engine.CodeGenerator;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -21,6 +22,7 @@ import java.awt.LayoutManager;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -44,9 +46,22 @@ public class Main {
     
     FileOperation fileHandler;
     
-    Main(){
+    private final String inputImage = "/home/gugu/Pictures/bak/input.jpg";
+    private final String pixelsImage = "/home/gugu/Pictures/bak/pixels.png";
+    private final String finalImage = "/home/gugu/Pictures/bak/final.png";
+    
+    JPanel povRaySettingsTab;
+    JPanel paintImageTab;
+    JPanel pixelsImageTab;
+    JPanel finalImageTab;
+    
+    CodeGenerator generator;
+    
+    Main() throws IOException{
         
         frame = new JFrame("Pov Ray");
+        
+        generator = new CodeGenerator();
         
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1100, 550);
@@ -59,17 +74,18 @@ public class Main {
         JMenuBar menu = new Menu(this, fileHandler);
         JToolBar toolBar = new Toolbar(this, fileHandler);
         
-       
         
-        JPanel tab1 = new CodeArea();
-        JPanel tab2 = new CodeArea();
-        JPanel tab3 = new CodeArea();
+        povRaySettingsTab = new PovRaySettings();
+        paintImageTab = new DisplayImage(inputImage);
+        pixelsImageTab = new DisplayImage(pixelsImage);
+        finalImageTab = new DisplayImage(finalImage);
         tabbedPane = new JTabbedPane();
         
-        tabbedPane.add("tab 1", tab1);
-        tabbedPane.add("tab 2", tab2);
-        tabbedPane.add("tab 3", tab3);
-             
+        tabbedPane.add("Pov Ray scene settings", povRaySettingsTab);
+        tabbedPane.add("preview painted image", paintImageTab);
+        tabbedPane.add("preview generated pixels", pixelsImageTab);
+        tabbedPane.add("preview final generated object", finalImageTab);
+        
         frame.setJMenuBar(menu);
         frame.add(toolBar, BorderLayout.NORTH);
         frame.add(tabbedPane);
@@ -82,7 +98,12 @@ public class Main {
     
     public static void main(String[] args){
 
-        new Main();
+        try {
+            new Main();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
     }
     
     private static void createWindow(){
@@ -98,5 +119,23 @@ public class Main {
     }
 
     
-    
+    public void refreshTabs(){
+        
+        try {
+            
+            String cameraSettings = PovRaySettings.cameraLocationText.getText();
+            String floorSettings = PovRaySettings.floorText.getText();
+            String lightSettings = PovRaySettings.lightText.getText();
+            
+            generator.setCameraSettings(cameraSettings);
+            generator.generatePixelsScene("", 0.5f);
+            
+            paintImageTab.repaint();
+            //pixelsImageTab.repaint();
+            //finalImageTab.repaint();
+            
+        } catch ( Exception e){
+            
+        }
+    }
 }

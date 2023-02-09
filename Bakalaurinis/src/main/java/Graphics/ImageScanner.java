@@ -3,13 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package vu.mif.bakalaurinis;
+package Graphics;
 
+import Graphics.Triangle;
+import Graphics.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.LinkedList;
 import javax.imageio.ImageIO;
+import IDE.FileOperation;
 
 /**
  *
@@ -17,7 +20,7 @@ import javax.imageio.ImageIO;
  */
 public class ImageScanner {
     
-    private FileOperation fileHandler;  
+    //private FileOperation fileHandler;  
     private BufferedImage img;
     
     LinkedList<LinkedList<Triangle>> triangles;
@@ -29,12 +32,12 @@ public class ImageScanner {
     private int ObjInnerColor;
     
     Point midPoint;
-    int width;
-    int height;
+    public int width;
+    public int height;
     
     public ImageScanner(File file){
         
-        fileHandler = new FileOperation("/home/gugu/stuff/povray");
+        //fileHandler = new FileOperation("/home/gugu/stuff/povray");
         
         System.out.println(file.getAbsolutePath()); 
   
@@ -220,7 +223,7 @@ public class ImageScanner {
     
     public LinkedList<LinkedList<Point>> getFigurePixels(){
         
-        pixels = new LinkedList();
+        LinkedList<LinkedList<Point>> pixels = new LinkedList();
         LinkedList<Point> row = new LinkedList();
         
         boolean coloredPixelSequence = false;
@@ -486,6 +489,73 @@ public class ImageScanner {
         catch ( Exception e){
             
             System.out.println("exportPaintedFigure exception");
+        }
+    }
+    
+    public void exportPovRayPixels(String location, float pixelRadius){
+        
+        try {
+
+            FileWriter myWriter = new FileWriter(location);
+
+            
+            myWriter.write("#include \"colors.inc\"\n#include \"textures.inc\"\n#include \"shapes.inc\"\n#include \"metals.inc\"\n#include \"glass.inc\"\n#include \"woods.inc\"\n"); 
+            myWriter.write("camera{ location  <0,0,300>\n  angle 40\nright     x*image_width/image_height\nlook_at   <0,0,0>\n}");   
+ 
+
+            myWriter.write("light_source {<-140,200, 300> rgb <1.0, 1.0, 0.95>*1.5}");
+            myWriter.write("light_source {< 140,200,-300> rgb <0.9, 0.9, 1.00>*0.9 shadowless}");          
+
+            myWriter.write("#declare Floor_Texture =\ntexture { pigment { P_WoodGrain18A color_map { M_Wood18A }}}\ntexture { pigment { P_WoodGrain12A color_map { M_Wood18B }}}\ntexture {\npigment { P_WoodGrain12B color_map { M_Wood18B }}\nfinish { reflection 0.25 }\n}");
+
+            myWriter.write("#declare Floor =\nplane { y,0\ntexture { Floor_Texture\nscale 0.5\nrotate y*90\nrotate <10, 0, 15>\ntranslate z*4\n}}");
+            
+            for (int y = 0; y < img.getHeight(); ++y ){
+            
+                for (int x = 0; x < img.getWidth(); ++x){
+
+                    if ( img.getRGB(x, y) == ObjInnerColor){
+                        
+                        float yy = (midPoint.y-y);
+                        float xx = (midPoint.x-x);
+                        
+                        if ( y % 2 == 0 && x % 2 == 0){
+                            
+                            myWriter.write("sphere{<"+yy+","+xx+",0>,"+pixelRadius);
+                            myWriter.write("pigment{Red}}\n");
+                        }
+                        
+                        else if (y % 2 == 1 && x % 2 == 0){
+                            
+                            myWriter.write("sphere{<"+yy+","+xx+",0>,"+pixelRadius);
+                            myWriter.write("pigment{Green}}\n");
+                        }
+                        
+                        else if (y % 2 == 0 && x % 2 == 1){
+                            
+                            myWriter.write("sphere{<"+yy+","+xx+",0>,"+pixelRadius);
+                            myWriter.write("pigment{Blue}}\n");
+                        }
+                        
+                        else {
+                            
+                            myWriter.write("sphere{<"+yy+","+xx+",0>,"+pixelRadius);
+                            myWriter.write("pigment{Yellow}}\n");
+                        }
+                    }
+                }
+            }
+
+            myWriter.write("\n");
+            
+            myWriter.close();
+
+        }
+        catch ( Exception e){
+            
+            System.out.println("Exception file export, Object class, exportPovRay function");
+            
+            e.printStackTrace();
         }
     }
 }

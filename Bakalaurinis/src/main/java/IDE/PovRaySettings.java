@@ -6,9 +6,11 @@
 package IDE;
 
 
+import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 /**
@@ -17,54 +19,56 @@ import javax.swing.JTextField;
  */
 public class PovRaySettings extends JPanel {
     
-    JLabel cameraLocationLabel;
-    JLabel cameraAngleLabel;
-    JLabel cameraLookAtLabel;
+    JLabel cameraLabel;
     JLabel lightLabel;
     JLabel floorLabel;
     
-    public static JTextField cameraLocationText;
-    public static JTextField cameraAngleText;
-    public static JTextField cameraLookAtText;
-    public static JTextField lightText;
-    public static JTextField floorText;
+    public static JTextArea cameraText;
+    public static JTextArea lightText;
+    public static JTextArea floorText;
     
+    JPanel cameraPanel;
+    JPanel lightPanel;
+    JPanel floorPanel;
+      
     public PovRaySettings(){
         
         
-        this.cameraLocationLabel = new JLabel("Camera location");
-        //this.cameraAngleLabel = new JLabel("Camera angle");
-        //this.cameraLookAtLabel = new JLabel("Camera lookt at");
-        
+        this.cameraLabel = new JLabel("Camera location");
         this.lightLabel = new JLabel("Light");
         this.floorLabel = new JLabel("Floor");
         
-        this.cameraLocationText = new JTextField(16);
-        //this.cameraAngleText = new JTextField(16);
-        //this.cameraLookAtText = new JTextField(16);
-        this.lightText = new JTextField(16);
-        this.floorText = new JTextField(16);
+        this.cameraText = new JTextArea();
+        this.lightText = new JTextArea();
+        this.floorText = new JTextArea();
         
-        //this.cameraText.setBounds(100, 50, 120, 30);
-        //this.lightText.setBounds(20, 10, 12, 3);
-        //this.floorText.setBounds(100, 50, 120, 30);
-        //this.text.setSize(30, 15);
-        
-        setLayout(new GridLayout(0, 1));
+        cameraText.setText("camera");
+        lightText.setText("light");
+        floorText.setText("floor");
         
         
-        this.add(cameraLocationLabel);
-        this.add(cameraLocationText);
-        //this.add(cameraAngleLabel);
-        //this.add(cameraAngleText);
-        //this.add(cameraLookAtLabel);
-        //this.add(cameraLookAtText);
+        setLayout(new GridLayout(1, 3, 20, 20));
         
-        this.add(lightLabel);
-        this.add(lightText);
         
-        this.add(floorLabel);
-        this.add(floorText);
+        cameraPanel = new JPanel();
+        lightPanel = new JPanel();
+        floorPanel = new JPanel();
+        
+        cameraPanel.setLayout(new BorderLayout());
+        lightPanel.setLayout(new BorderLayout());
+        floorPanel.setLayout(new BorderLayout());
+        
+        cameraPanel.add(cameraLabel, BorderLayout.NORTH);
+        cameraPanel.add(cameraText);
+        lightPanel.add(lightLabel, BorderLayout.NORTH);
+        lightPanel.add(lightText);
+        floorPanel.add(floorLabel, BorderLayout.NORTH);
+        floorPanel.add(floorText);
+        
+        this.add(cameraPanel);
+        this.add(lightPanel);
+        this.add(floorPanel);
+
     }
     
 }

@@ -11,7 +11,6 @@ import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 
 /**
  *
@@ -42,9 +41,9 @@ public class PovRaySettings extends JPanel {
         this.lightText = new JTextArea();
         this.floorText = new JTextArea();
         
-        cameraText.setText("camera");
-        lightText.setText("light");
-        floorText.setText("floor");
+        cameraText.setText("camera{ location  <0,0, -300>\n  angle 40\nright     x*image_width/image_height\nlook_at   <0,0,0>\n}");
+        lightText.setText("light_source {<-140,200, 300> rgb <1.0, 1.0, 0.95>*1.5}\nlight_source {< 140,200,-300> rgb <0.9, 0.9, 1.00>*0.9 shadowless}");
+        floorText.setText("#declare Floor_Texture =\ntexture { pigment { P_WoodGrain18A color_map { M_Wood18A }}}\ntexture { pigment { P_WoodGrain12A color_map { M_Wood18B }}}\ntexture {\npigment { P_WoodGrain12B color_map { M_Wood18B }}\nfinish { reflection 0.25 }\n}\n#declare Floor =\nplane { y,0\ntexture { Floor_Texture\nscale 0.5\nrotate y*90\nrotate <10, 0, 15>\ntranslate z*4\n}}");
         
         
         setLayout(new GridLayout(1, 3, 20, 20));

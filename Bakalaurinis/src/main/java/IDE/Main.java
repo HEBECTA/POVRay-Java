@@ -9,31 +9,17 @@ package IDE;
  *
  * @author GUGU
  */
-import Engine.CodeGenerator;
+import Engine.SceneGenerator;
+import Graphics.ImageScanner;
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.FlowLayout;
+import java.io.File;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.LayoutManager;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JMenuBar;
-import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
 import javax.swing.JToolBar;
-import javax.swing.border.Border;
-import javax.swing.border.EtchedBorder;
 
 
 
@@ -55,13 +41,17 @@ public class Main {
     JPanel pixelsImageTab;
     JPanel finalImageTab;
     
-    CodeGenerator generator;
+    ImageScanner imageScanner;
+    SceneGenerator generator;
     
     Main() throws IOException{
         
         frame = new JFrame("Pov Ray");
         
-        generator = new CodeGenerator();
+        File imageFile = new File(inputImage);
+        imageScanner = new ImageScanner(imageFile);
+        
+        generator = new SceneGenerator();
         
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1100, 550);
@@ -123,18 +113,25 @@ public class Main {
         
         try {
             
-            String cameraSettings = PovRaySettings.cameraLocationText.getText();
+            String cameraSettings = PovRaySettings.cameraText.getText();
             String floorSettings = PovRaySettings.floorText.getText();
             String lightSettings = PovRaySettings.lightText.getText();
             
+            if (imageScanner.imageUpdated()){
+                
+                generator.setPixels(imageScanner.getFigurePixels());
+            }
+            
             generator.setCameraSettings(cameraSettings);
+            generator.setLightSettings(lightSettings);
+            generator.setFloorSettings(floorSettings);
             generator.generatePixelsScene("", 0.5f);
             
             paintImageTab.repaint();
             //pixelsImageTab.repaint();
             //finalImageTab.repaint();
             
-        } catch ( Exception e){
+        } catch (Exception e){
             
         }
     }

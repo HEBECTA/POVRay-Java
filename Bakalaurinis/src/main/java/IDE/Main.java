@@ -119,6 +119,7 @@ public class Main {
             String cameraSettings = PovRaySettings.cameraText.getText();
             String floorSettings = PovRaySettings.floorText.getText();
             String lightSettings = PovRaySettings.lightText.getText();
+            String transformationSettings = PovRaySettings.transformationText.getText();
             
             if (imageScanner.imageUpdated()){
                 
@@ -128,6 +129,7 @@ public class Main {
             generator.setCameraSettings(cameraSettings);
             generator.setLightSettings(lightSettings);
             generator.setFloorSettings(floorSettings);
+            generator.setTransformationSettings(transformationSettings);
             generator.generatePixelsScene(pixelsImagePovCode, pixelsImage, 0.5f);
             
             paintImageTab.repaint();

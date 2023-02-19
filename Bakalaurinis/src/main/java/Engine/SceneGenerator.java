@@ -21,6 +21,7 @@ public class SceneGenerator {
     private String cameraSettings;
     private String lightSettings;
     private String floorSettings;
+    private String transformationsSettings;
     
     private LinkedList<LinkedList<Point>> pixels;
     
@@ -44,6 +45,10 @@ public class SceneGenerator {
         floorSettings = settings;
     }
     
+    public void setTransformationSettings(String settings){
+        transformationsSettings = settings;
+    }
+    
     public void generatePixelsScene(String inputLocation, String outputLocation, float pixelRadius){
         
         try {
@@ -56,6 +61,8 @@ public class SceneGenerator {
             myWriter.write(lightSettings);
             myWriter.write(floorSettings);          
 
+            myWriter.write("\nunion{\n");  
+            
             Iterator<LinkedList<Point>> rowIt = pixels.iterator();
             
             int x = 0;
@@ -101,6 +108,10 @@ public class SceneGenerator {
                 }
             
             }
+            
+            myWriter.write("\n"+transformationsSettings+"\n");  
+            
+            myWriter.write("\n}\n");  
 
             myWriter.write("\n");
             

@@ -57,7 +57,7 @@ public class Main {
         generator = new SceneGenerator();
         
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1100, 550);
+        frame.setSize(1200, 650);
         frame.setTitle("POV Ray");
         frame.setLocationRelativeTo(null);
         

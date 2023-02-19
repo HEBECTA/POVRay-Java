@@ -133,7 +133,7 @@ public class SceneGenerator {
                 System.out.println("Opening povray");
                 Runtime runTime = Runtime.getRuntime();
                 System.out.println("Read from " + inputLocation + " write to " + outputLocation);
-                Process process = runTime.exec("povray +I" + inputLocation + " +V +O" + outputLocation);
+                Process process = runTime.exec("povray +I" + inputLocation + " +V +W600 +H480 +O" + outputLocation);
                 synchronized (process){ 
                     try {
                         //Thread.sleep(6000);

@@ -8,6 +8,7 @@ package Engine;
 import Graphics.Point;
 import Graphics.Triangle;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -43,11 +44,11 @@ public class SceneGenerator {
         floorSettings = settings;
     }
     
-    public void generatePixelsScene(String location, float pixelRadius){
+    public void generatePixelsScene(String inputLocation, String outputLocation, float pixelRadius){
         
         try {
 
-            FileWriter myWriter = new FileWriter(location);
+            FileWriter myWriter = new FileWriter(inputLocation);
 
             myWriter.write("#include \"colors.inc\"\n#include \"textures.inc\"\n#include \"shapes.inc\"\n#include \"metals.inc\"\n#include \"glass.inc\"\n#include \"woods.inc\"\n"); 
             myWriter.write(cameraSettings);
@@ -104,7 +105,6 @@ public class SceneGenerator {
             myWriter.write("\n");
             
             myWriter.close();
-
         }
         catch ( Exception e){
             
@@ -112,5 +112,33 @@ public class SceneGenerator {
             
             e.printStackTrace();
         }
+        
+        executePovRay(inputLocation, outputLocation);
+    }
+    
+    private void executePovRay(String inputLocation, String outputLocation){
+        
+            try {
+                System.out.println("Opening povray");
+                Runtime runTime = Runtime.getRuntime();
+                System.out.println("Read from " + inputLocation + " write to " + outputLocation);
+                Process process = runTime.exec("povray +I" + inputLocation + " +V +O" + outputLocation);
+                synchronized (process){ 
+                    try {
+                        //Thread.sleep(6000);
+                        process.waitFor();
+                        System.out.println(process.toString());
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                System.out.println("Closing povray");
+                
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        
     }
 }

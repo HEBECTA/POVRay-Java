@@ -36,6 +36,9 @@ public class Main {
     private final String pixelsImage = "/home/gugu/Pictures/bak/pixels.png";
     private final String finalImage = "/home/gugu/Pictures/bak/final.png";
     
+    private final String pixelsImagePovCode = "/home/gugu/Pictures/bak/pixels.pov";
+    //private final String finalImagePovCode = "/home/gugu/Pictures/bak/final.pov";
+    
     JPanel povRaySettingsTab;
     JPanel paintImageTab;
     JPanel pixelsImageTab;
@@ -61,8 +64,8 @@ public class Main {
         fileHandler = new FileOperation("/home/gugu/stuff/povray");
         
         
-        JMenuBar menu = new Menu(this, fileHandler);
-        JToolBar toolBar = new Toolbar(this, fileHandler);
+        menu = new Menu(this, fileHandler);
+        toolBar = new Toolbar(this, fileHandler);
         
         
         povRaySettingsTab = new PovRaySettings();
@@ -125,10 +128,10 @@ public class Main {
             generator.setCameraSettings(cameraSettings);
             generator.setLightSettings(lightSettings);
             generator.setFloorSettings(floorSettings);
-            generator.generatePixelsScene("", 0.5f);
+            generator.generatePixelsScene(pixelsImagePovCode, pixelsImage, 0.5f);
             
             paintImageTab.repaint();
-            //pixelsImageTab.repaint();
+            pixelsImageTab.repaint();
             //finalImageTab.repaint();
             
         } catch (Exception e){

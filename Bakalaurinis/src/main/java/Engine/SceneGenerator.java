@@ -84,25 +84,25 @@ public class SceneGenerator {
                     
                     if ( y % 2 == 0 && x % 2 == 0){
                             
-                            myWriter.write("sphere{<"+point.y+","+point.x+",0>,"+pixelRadius);
+                            myWriter.write("sphere{<"+point.x+","+point.y+",0>,"+pixelRadius);
                             myWriter.write("pigment{Red}}\n");
                         }
                         
                         else if (y % 2 == 1 && x % 2 == 0){
                             
-                            myWriter.write("sphere{<"+point.y+","+point.x+",0>,"+pixelRadius);
+                            myWriter.write("sphere{<"+point.x+","+point.y+",0>,"+pixelRadius);
                             myWriter.write("pigment{Green}}\n");
                         }
                         
                         else if (y % 2 == 0 && x % 2 == 1){
                             
-                            myWriter.write("sphere{<"+point.y+","+point.x+",0>,"+pixelRadius);
+                            myWriter.write("sphere{<"+point.x+","+point.y+",0>,"+pixelRadius);
                             myWriter.write("pigment{Blue}}\n");
                         }
                         
                         else {
                             
-                            myWriter.write("sphere{<"+point.y+","+point.x+",0>,"+pixelRadius);
+                            myWriter.write("sphere{<"+point.x+","+point.y+",0>,"+pixelRadius);
                             myWriter.write("pigment{Yellow}}\n");
                         }
                 }

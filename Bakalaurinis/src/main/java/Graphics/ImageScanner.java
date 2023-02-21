@@ -42,18 +42,33 @@ public class ImageScanner {
 
         imageFile = file;
         //fileHandler = new FileOperation("/home/gugu/stuff/povray");
-        System.out.println(file.getAbsolutePath());
+        //System.out.println(file.getAbsolutePath());
 
         // black
         ObjContourColor = 0xff000000;
         // green
         ObjInnerColor = 0xff22b14c;
 
+        refreshFile();
+    }
+    
+    private void refreshFile(){
+        
         try {
+            
+            if (imageFile.exists())
+                img = ImageIO.read(imageFile);
+            
+        } catch (Exception e) {
 
-            img = ImageIO.read(file);
+            e.printStackTrace();
+            System.out.println("refreshFile Exception");
+        }
+    }
 
-            int maxY = -1, minY = img.getHeight() - 1, maxX = -1, minX = img.getWidth() - 1;
+    private void calculateMidPoint(){
+        
+        int maxY = -1, minY = img.getHeight() - 1, maxX = -1, minX = img.getWidth() - 1;
 
             for (int y = 0; y < img.getHeight(); ++y) {
 
@@ -102,16 +117,8 @@ public class ImageScanner {
             midPoint = new Point(minY + (maxY - minY) / 2, minX + (maxX - minX) / 2);
             width = maxX - minX;
             height = maxY - minY;
-            //File outputfile = new File("image.png");
-            //ImageIO.write(img, "png", outputfile);    
-        } catch (Exception e) {
-
-            e.printStackTrace();
-
-            System.out.println("Image constructor exception");
-        }
     }
-
+    
     private void fillObject(int y, int x) {
 
         //System.out.println("fillObject " + y + ", " + x);
@@ -222,38 +229,51 @@ public class ImageScanner {
     }
 
     public LinkedList<LinkedList<Point>> getFigurePixels() {
-
+        
+        refreshFile();
+        
+        calculateMidPoint();
+        
         LinkedList<LinkedList<Point>> pixels = new LinkedList();
         LinkedList<Point> row = new LinkedList();
+        
+        try {
 
-        boolean coloredPixelSequence = false;
+            img.flush();
+            img = ImageIO.read(imageFile);
 
-        for (int y = 0; y < img.getHeight(); ++y) {
+            boolean coloredPixelSequence = false;
 
-            for (int x = 0; x < img.getWidth(); ++x) {
+            for (int y = 0; y < img.getHeight(); ++y) {
 
-                int pixelColor = img.getRGB(x, y);
+                for (int x = 0; x < img.getWidth(); ++x) {
 
-                if (pixelColor == ObjInnerColor || pixelColor == ObjContourColor) {
+                    int pixelColor = img.getRGB(x, y);
 
-                    coloredPixelSequence = true;
+                    if (pixelColor == ObjInnerColor || pixelColor == ObjContourColor) {
 
-                    row.add(new Point(y - midPoint.y, x - midPoint.x));
-                } else if (coloredPixelSequence) {
+                        coloredPixelSequence = true;
 
-                    coloredPixelSequence = false;
+                        row.add(new Point(-(y - midPoint.y), x - midPoint.x));
+                    } else if (coloredPixelSequence) {
+
+                        coloredPixelSequence = false;
+                        pixels.add(row);
+                        row = new LinkedList();
+                    }
+                }
+
+                if (!row.isEmpty()) {
+
                     pixels.add(row);
                     row = new LinkedList();
                 }
+
+                coloredPixelSequence = false;
             }
-
-            if (!row.isEmpty()) {
-
-                pixels.add(row);
-                row = new LinkedList();
-            }
-
-            coloredPixelSequence = false;
+        } catch (Exception e){
+            e.printStackTrace();
+            System.out.println("getFigurePixels Exception");
         }
 
         return pixels;

@@ -13,7 +13,7 @@ import Graphics.Point;
  */
 public class Triangle {
     
-    Point p1, p2, p3;
+    public Point p1, p2, p3;
     
     int r, g, b;
     
@@ -70,6 +70,13 @@ public class Triangle {
             return true;
         
         return false;   
+    }
+    
+    public void mirrorYfrom(){
+        
+        p1.y = -p1.y;
+        p2.y = -p2.y;
+        p3.y = -p3.y;
     }
 }
 

@@ -24,10 +24,16 @@ public class SceneGenerator {
     private String transformationsSettings;
     
     private LinkedList<LinkedList<Point>> pixels;
+    private LinkedList<LinkedList<Triangle>> triangles;
     
     public void setPixels(LinkedList<LinkedList<Point>> pixels){
         
         this.pixels = pixels;
+    }
+    
+    public void setTriangles(LinkedList<LinkedList<Triangle>> triangles){
+        
+        this.triangles = triangles;
     }
     
     public void setCameraSettings(String settings){
@@ -119,9 +125,65 @@ public class SceneGenerator {
         }
         catch ( Exception e){
             
-            System.out.println("Exception file export, Object class, exportPovRay function");
+            System.out.println("Exception generatePixelsScene myWriter");
             
             e.printStackTrace();
+            
+            return;
+        }
+        
+        executePovRay(inputLocation, outputLocation);
+    }
+    
+    public void generateFinalScene(String inputLocation, String outputLocation){
+        
+        try {
+
+            FileWriter myWriter = new FileWriter(inputLocation);
+
+            myWriter.write("#include \"colors.inc\"\n#include \"textures.inc\"\n#include \"shapes.inc\"\n#include \"metals.inc\"\n#include \"glass.inc\"\n#include \"woods.inc\"\n"); 
+            myWriter.write(cameraSettings);
+ 
+            myWriter.write(lightSettings);
+            myWriter.write(floorSettings);          
+
+            Iterator<LinkedList<Triangle>> rowIt = triangles.iterator();
+        
+            myWriter.write("\nmesh\n{\n");
+            
+            while ( rowIt.hasNext() ){
+
+                LinkedList<Triangle> row = rowIt.next();
+
+                Iterator<Triangle> triangleIt = row.iterator();
+
+                while ( triangleIt.hasNext() ){
+
+                    Triangle triangle = triangleIt.next();
+                    
+                    myWriter.write("triangle {");
+
+                    myWriter.write("<"+triangle.p1.x+", "+triangle.p1.y+", "+triangle.p1.z+">, ");
+                    myWriter.write("<"+triangle.p2.x+", "+triangle.p2.y+", "+triangle.p2.z+">, ");
+                    myWriter.write("<"+triangle.p3.x+", "+triangle.p3.y+", "+triangle.p3.z+">}\n");
+                }
+            }
+            
+            myWriter.write("\n"+transformationsSettings+"\n");  
+            
+            myWriter.write("\n}");  
+
+            myWriter.write("\n");
+            
+            myWriter.close();
+        }
+        catch ( Exception e){
+            
+            System.out.println("Exception generateFinalScene myWriter");
+            
+            e.printStackTrace();
+            
+            return;
         }
         
         executePovRay(inputLocation, outputLocation);

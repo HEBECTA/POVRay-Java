@@ -31,6 +31,7 @@ public class ImageScanner {
 
     private int ObjContourColor;
     private int ObjInnerColor;
+    private int ObjEmptyColor;
 
     Point midPoint;
     public int width;
@@ -41,13 +42,13 @@ public class ImageScanner {
     public ImageScanner(File file) {
 
         imageFile = file;
-        //fileHandler = new FileOperation("/home/gugu/stuff/povray");
-        //System.out.println(file.getAbsolutePath());
 
         // black
         ObjContourColor = 0xff000000;
         // green
         ObjInnerColor = 0xff22b14c;
+        
+        ObjEmptyColor = 0xffffffff;
 
         refreshFile();
     }
@@ -94,43 +95,40 @@ public class ImageScanner {
                             minX = x;
                         }
                     }
-
-                    if (pixelColor == ObjInnerColor) {
-
-                        if (y - 1 >= 0) {
-                            fillObject(y - 1, x);
-                        } else if (y + 1 < img.getHeight()) {
-                            fillObject(y - 1, x);
-                        } else if (x - 1 < 0) {
-                            fillObject(y, x - 1);
-                        } else if (x + 1 < img.getWidth()) {
-                            fillObject(y, x + 1);
-                        } else {
-                            System.out.println("Image constructor, nothing to fill !");
-                        }
-
-                        break;
-                    }
                 }
             }
 
             midPoint = new Point(minY + (maxY - minY) / 2, minX + (maxX - minX) / 2);
             width = maxX - minX;
             height = maxY - minY;
+            
+            System.out.println("mid point y " + midPoint.y + " x " + midPoint.x);
+    }
+    
+    private Point findColor(int base_y, int base_x, int color){
+        
+        for (int y = base_y; y < img.getHeight(); ++y){
+            
+            for (int x = base_x; x < img.getWidth(); ++x){
+                
+                if (img.getRGB(x, y) == color)
+                    return new Point(y, x);
+            }
+        }
+        
+        return null;
     }
     
     private void fillObject(int y, int x) {
-
-        //System.out.println("fillObject " + y + ", " + x);
+        
         int pixelColor = img.getRGB(x, y);
 
         if (pixelColor != ObjContourColor && pixelColor != ObjInnerColor) {
 
             img.setRGB(x, y, ObjInnerColor);
             //System.out.println("empty pixel " + y + ", " + x);
-        } else {
-            return;
-        }
+        } else return;
+        
 
         if (y - 1 >= 0) {
 
@@ -156,9 +154,25 @@ public class ImageScanner {
     // check boundaries
     // triangleSize => opposite and adjacent side size in pixels
     public LinkedList<LinkedList<Triangle>> getTriangulatedObject(int triangleSize) {
-
-        triangles = new LinkedList<>();
+        
+        triangles = null;
         LinkedList<Triangle> row;// = new LinkedList();
+        
+        Point innerPixel = findColor(0, 0, ObjInnerColor);
+        if (innerPixel == null)
+            return triangles;
+        
+        System.out.println("findColor " + (int)innerPixel.y + " " + (int)innerPixel.x + " " + ObjInnerColor);
+        
+        innerPixel = findColor((int)innerPixel.y, (int)innerPixel.x, ObjEmptyColor);
+        if (innerPixel == null)
+            return triangles;
+        
+        System.out.println("findColor " + (int)innerPixel.y + " " + (int)innerPixel.x + " " + ObjEmptyColor);
+        
+        triangles = new LinkedList<>();
+        
+        fillObject((int)innerPixel.y, (int)innerPixel.x);
 
         int i = triangleSize - 1;
         //int i = triangleSize;
@@ -185,19 +199,23 @@ public class ImageScanner {
                     if (tTopRight != null || tBotLeft != null) {
 
                         if (tBotLeft != null) {
+                            tBotLeft.mirrorYfrom();
                             row.add(tBotLeft);
                         }
 
                         if (tTopRight != null) {
+                            tTopRight.mirrorYfrom();
                             row.add(tTopRight);
                         }
                     } else if (tTopLeft != null || tBotRight != null) {
 
                         if (tTopLeft != null) {
+                            tTopLeft.mirrorYfrom();
                             row.add(tTopLeft);
                         }
 
                         if (tBotRight != null) {
+                            tBotRight.mirrorYfrom();
                             row.add(tBotRight);
                         }
                     } else {
@@ -229,11 +247,7 @@ public class ImageScanner {
     }
 
     public LinkedList<LinkedList<Point>> getFigurePixels() {
-        
-        refreshFile();
-        
-        calculateMidPoint();
-        
+                   
         LinkedList<LinkedList<Point>> pixels = new LinkedList();
         LinkedList<Point> row = new LinkedList();
         
@@ -558,5 +572,12 @@ public class ImageScanner {
     public boolean imageUpdated(){
         
         return lastModified != imageFile.lastModified();
+    }
+    
+    public void refreshImage(){
+        
+        refreshFile();
+        
+        calculateMidPoint();
     }
 }

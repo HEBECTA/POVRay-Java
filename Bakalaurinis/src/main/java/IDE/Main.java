@@ -32,12 +32,12 @@ public class Main {
     
     FileOperation fileHandler;
     
-    private final String inputImage = "/home/gugu/Pictures/bak/input.jpg";
+    private final String inputImage = "/home/gugu/Pictures/bak/kursinis.png";
     private final String pixelsImage = "/home/gugu/Pictures/bak/pixels.png";
     private final String finalImage = "/home/gugu/Pictures/bak/final.png";
     
     private final String pixelsImagePovCode = "/home/gugu/Pictures/bak/pixels.pov";
-    //private final String finalImagePovCode = "/home/gugu/Pictures/bak/final.pov";
+    private final String finalImagePovCode = "/home/gugu/Pictures/bak/final.pov";
     
     JPanel povRaySettingsTab;
     JPanel paintImageTab;
@@ -121,20 +121,23 @@ public class Main {
             String lightSettings = PovRaySettings.lightText.getText();
             String transformationSettings = PovRaySettings.transformationText.getText();
             
-            if (imageScanner.imageUpdated()){
+            //if (imageScanner.imageUpdated()){
                 
+                imageScanner.refreshImage();
                 generator.setPixels(imageScanner.getFigurePixels());
-            }
+                generator.setTriangles(imageScanner.getTriangulatedObject(2));
+            //}
             
             generator.setCameraSettings(cameraSettings);
             generator.setLightSettings(lightSettings);
             generator.setFloorSettings(floorSettings);
             generator.setTransformationSettings(transformationSettings);
             generator.generatePixelsScene(pixelsImagePovCode, pixelsImage, 0.5f);
+            generator.generateFinalScene(finalImagePovCode, finalImage);
             
             paintImageTab.repaint();
             pixelsImageTab.repaint();
-            //finalImageTab.repaint();
+            finalImageTab.repaint();
             
         } catch (Exception e){
             

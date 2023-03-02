@@ -256,7 +256,7 @@ public class Toolbar extends JToolBar implements ActionListener {
         
         else if ( cmdText.equals("final") ){
             
-            
+            /*
             JFileChooser f = new JFileChooser("C:\\Users\\GUGU\\Pictures\\_kursinis.png");
             
             f.showOpenDialog(null);
@@ -269,7 +269,7 @@ public class Toolbar extends JToolBar implements ActionListener {
                 
                 image.exportFillPovRay("fill.txt", 0.7f);
                 
-                image.exportPaintedFigure("painted.png");
+                //image.exportPaintedFigure("painted.png");
 
 
                
@@ -280,13 +280,12 @@ public class Toolbar extends JToolBar implements ActionListener {
                 
                 e.printStackTrace();
             }
-            
+            */
         }
         
         else if ( cmdText.equals("refresh") ){
             
             mainWindow.refreshTabs();
-            
         }
     }
 }

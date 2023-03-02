@@ -11,6 +11,7 @@ package IDE;
  */
 import Engine.SceneGenerator;
 import Graphics.ImageScanner;
+import Graphics.Object3D;
 import java.awt.BorderLayout;
 import java.io.File;
 import javax.swing.JFrame;
@@ -34,6 +35,7 @@ public class Main {
     
     private final String inputImage = "/home/gugu/Pictures/bak/kursinis.png";
     private final String pixelsImage = "/home/gugu/Pictures/bak/pixels.png";
+    private final String paintedImage = "/home/gugu/Pictures/bak/paintedImage.png";
     private final String finalImage = "/home/gugu/Pictures/bak/final.png";
     
     private final String pixelsImagePovCode = "/home/gugu/Pictures/bak/pixels.pov";
@@ -41,11 +43,13 @@ public class Main {
     
     JPanel povRaySettingsTab;
     JPanel paintImageTab;
+    JPanel paintedImageTab;
     JPanel pixelsImageTab;
     JPanel finalImageTab;
     
     ImageScanner imageScanner;
     SceneGenerator generator;
+    Object3D generator3D;
     
     Main() throws IOException{
         
@@ -55,6 +59,7 @@ public class Main {
         imageScanner = new ImageScanner(imageFile);
         
         generator = new SceneGenerator();
+        generator3D = new Object3D();
         
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1200, 650);
@@ -70,12 +75,14 @@ public class Main {
         
         povRaySettingsTab = new PovRaySettings();
         paintImageTab = new DisplayImage(inputImage);
+        paintedImageTab = new DisplayImage(paintedImage);
         pixelsImageTab = new DisplayImage(pixelsImage);
         finalImageTab = new DisplayImage(finalImage);
         tabbedPane = new JTabbedPane();
         
         tabbedPane.add("Pov Ray scene settings", povRaySettingsTab);
-        tabbedPane.add("preview painted image", paintImageTab);
+        tabbedPane.add("preview paint image", paintImageTab);
+        tabbedPane.add("preview painted image", paintedImageTab);
         tabbedPane.add("preview generated pixels", pixelsImageTab);
         tabbedPane.add("preview final generated object", finalImageTab);
         
@@ -123,10 +130,17 @@ public class Main {
             
             //if (imageScanner.imageUpdated()){
                 
-                imageScanner.refreshImage();
-                generator.setPixels(imageScanner.getFigurePixels());
+                if (!imageScanner.refreshImage()){
+                    
+                    System.out.println("imageScanner.refreshImage failed !");
+                    return;
+                }
+
+                generator.setPixels(imageScanner.getContourPixels());
                 generator.setTriangles(imageScanner.getTriangulatedObject(2));
             //}
+            generator3D.setFigureAreaPixels(imageScanner.getFigureAreaPixels());
+            
             
             generator.setCameraSettings(cameraSettings);
             generator.setLightSettings(lightSettings);
@@ -136,6 +150,7 @@ public class Main {
             generator.generateFinalScene(finalImagePovCode, finalImage);
             
             paintImageTab.repaint();
+            paintedImageTab.repaint();
             pixelsImageTab.repaint();
             finalImageTab.repaint();
             

@@ -23,6 +23,7 @@ public class ImageScanner {
     //private FileOperation fileHandler; 
     private File imageFile;
     private BufferedImage img;
+    private BufferedImage paintedImage;
 
     LinkedList<LinkedList<Triangle>> triangles;
 
@@ -101,8 +102,6 @@ public class ImageScanner {
             midPoint = new Point(minY + (maxY - minY) / 2, minX + (maxX - minX) / 2);
             width = maxX - minX;
             height = maxY - minY;
-            
-            System.out.println("mid point y " + midPoint.y + " x " + midPoint.x);
     }
     
     private Point findColor(int base_y, int base_x, int color){
@@ -155,25 +154,9 @@ public class ImageScanner {
     // triangleSize => opposite and adjacent side size in pixels
     public LinkedList<LinkedList<Triangle>> getTriangulatedObject(int triangleSize) {
         
-        triangles = null;
+        triangles = new LinkedList<>();;
         LinkedList<Triangle> row;// = new LinkedList();
         
-        Point innerPixel = findColor(0, 0, ObjInnerColor);
-        if (innerPixel == null)
-            return triangles;
-        
-        System.out.println("findColor " + (int)innerPixel.y + " " + (int)innerPixel.x + " " + ObjInnerColor);
-        
-        innerPixel = findColor((int)innerPixel.y, (int)innerPixel.x, ObjEmptyColor);
-        if (innerPixel == null)
-            return triangles;
-        
-        System.out.println("findColor " + (int)innerPixel.y + " " + (int)innerPixel.x + " " + ObjEmptyColor);
-        
-        triangles = new LinkedList<>();
-        
-        fillObject((int)innerPixel.y, (int)innerPixel.x);
-
         int i = triangleSize - 1;
         //int i = triangleSize;
 
@@ -246,7 +229,7 @@ public class ImageScanner {
         return triangles;
     }
 
-    public LinkedList<LinkedList<Point>> getFigurePixels() {
+    public LinkedList<LinkedList<Point>> getContourPixels() {
                    
         LinkedList<LinkedList<Point>> pixels = new LinkedList();
         LinkedList<Point> row = new LinkedList();
@@ -290,6 +273,15 @@ public class ImageScanner {
             System.out.println("getFigurePixels Exception");
         }
 
+        return pixels;
+    }
+    
+    public LinkedList<LinkedList<Point>> getFigureAreaPixels(){
+        
+        LinkedList<LinkedList<Point>> pixels = new LinkedList();
+        LinkedList<Point> row = new LinkedList();
+        
+        
         return pixels;
     }
 
@@ -499,7 +491,7 @@ public class ImageScanner {
         }
     }
 
-    public void exportPaintedFigure(String location) {
+    private void exportPaintedFigure(String location) {
 
         try {
 
@@ -574,10 +566,28 @@ public class ImageScanner {
         return lastModified != imageFile.lastModified();
     }
     
-    public void refreshImage(){
+    public boolean refreshImage(){
         
         refreshFile();
         
         calculateMidPoint();
+        
+        Point innerPixel = findColor(0, 0, ObjInnerColor);
+        if (innerPixel == null)
+            return false;
+        
+        innerPixel = findColor((int)innerPixel.y, (int)innerPixel.x, ObjEmptyColor);
+        if (innerPixel == null)
+            return false;
+        
+        fillObject((int)innerPixel.y, (int)innerPixel.x);
+        
+        System.out.println("mid point y " + midPoint.y + " x " + midPoint.x);
+        
+        exportPaintedFigure("/home/gugu/Pictures/bak/paintedImage.png");
+        
+        System.out.println("Painted image: /home/gugu/Pictures/bak/paintedImage.png");
+        
+        return true;
     }
 }

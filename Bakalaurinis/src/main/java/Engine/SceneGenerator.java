@@ -5,6 +5,7 @@
  */
 package Engine;
 
+import Graphics.FigureData;
 import Graphics.Point;
 import Graphics.Triangle;
 import java.io.FileWriter;
@@ -23,17 +24,11 @@ public class SceneGenerator {
     private String floorSettings;
     private String transformationsSettings;
     
-    private LinkedList<LinkedList<Point>> pixels;
-    private LinkedList<LinkedList<Triangle>> triangles;
+    private FigureData figureData;
     
-    public void setPixels(LinkedList<LinkedList<Point>> pixels){
+    public void setFigureData(FigureData figureData){
         
-        this.pixels = pixels;
-    }
-    
-    public void setTriangles(LinkedList<LinkedList<Triangle>> triangles){
-        
-        this.triangles = triangles;
+        this.figureData = figureData;
     }
     
     public void setCameraSettings(String settings){
@@ -69,7 +64,7 @@ public class SceneGenerator {
 
             myWriter.write("\nunion{\n");  
             
-            Iterator<LinkedList<Point>> rowIt = pixels.iterator();
+            Iterator<LinkedList<Point>> rowIt = figureData.contourPixels.iterator();
             
             int x = 0;
             int y = 0;
@@ -147,7 +142,7 @@ public class SceneGenerator {
             myWriter.write(lightSettings);
             myWriter.write(floorSettings);          
 
-            Iterator<LinkedList<Triangle>> rowIt = triangles.iterator();
+            Iterator<LinkedList<Triangle>> rowIt = figureData.triangles.iterator();
         
             myWriter.write("\nmesh\n{\n");
             

@@ -24,11 +24,13 @@ public class ImageScanner {
     private File imageFile;
     private BufferedImage img;
     private BufferedImage paintedImage;
+    
+    private FigureData figureData;
 
     LinkedList<LinkedList<Triangle>> triangles;
 
     //LinkedList<Triangle> trianglesTest;
-    LinkedList<LinkedList<Point>> pixels;
+    //LinkedList<LinkedList<Point>> pixels;
 
     private int ObjContourColor;
     private int ObjInnerColor;
@@ -52,6 +54,20 @@ public class ImageScanner {
         ObjEmptyColor = 0xffffffff;
 
         refreshImage();
+    }
+    
+    public FigureData getFigureData(int triangleSize){
+        
+        figureData = new FigureData();
+        
+        figureData.height = height;
+        figureData.width = width;
+        figureData.midPoint = midPoint;
+        figureData.triangles = getTriangulatedObject(triangleSize);
+        figureData.contourPixels = getContourPixels();
+        figureData.figureAreaPixels = getFigureAreaPixels();
+        
+        return figureData;
     }
     
     public boolean imageUpdated(){

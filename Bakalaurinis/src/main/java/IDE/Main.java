@@ -129,20 +129,14 @@ public class Main {
             String floorSettings = PovRaySettings.floorText.getText();
             String lightSettings = PovRaySettings.lightText.getText();
             String transformationSettings = PovRaySettings.transformationText.getText();
-            
-            //if (imageScanner.imageUpdated()){
-                
-                if (!imageScanner.refreshImage()){
+                   
+            if (!imageScanner.refreshImage()){
                     
-                    System.out.println("imageScanner.refreshImage failed !");
-                    return;
-                }
-
-                generator.setPixels(imageScanner.getContourPixels());
-                generator.setTriangles(imageScanner.getTriangulatedObject(2));
-            //}
-            generator3D.setFigureAreaPixels(imageScanner.getFigureAreaPixels());
-            
+                System.out.println("imageScanner.refreshImage failed !");
+                return;
+            }
+            int traingleSize = 2;
+            generator.setFigureData(imageScanner.getFigureData(traingleSize));
             
             generator.setCameraSettings(cameraSettings);
             generator.setLightSettings(lightSettings);

@@ -27,7 +27,7 @@ public class ImageScanner {
 
     LinkedList<LinkedList<Triangle>> triangles;
 
-    LinkedList<Triangle> trianglesTest;
+    //LinkedList<Triangle> trianglesTest;
     LinkedList<LinkedList<Point>> pixels;
 
     private int ObjContourColor;
@@ -51,23 +51,51 @@ public class ImageScanner {
         
         ObjEmptyColor = 0xffffffff;
 
-        refreshFile();
+        refreshImage();
     }
     
-    private void refreshFile(){
+    public boolean imageUpdated(){
+        
+        return lastModified != imageFile.lastModified();
+    }
+    
+    public boolean refreshImage(){
         
         try {
             
-            if (imageFile.exists())
+            if (imageFile.exists()){
+                
+                paintedImage = ImageIO.read(imageFile);
                 img = ImageIO.read(imageFile);
+            }
+           
+            calculateMidPoint();
+        
+            Point innerPixel = findColor(0, 0, ObjInnerColor);
+            if (innerPixel == null)
+                return false;
+
+            innerPixel = findColor((int)innerPixel.y, (int)innerPixel.x, ObjEmptyColor);
+            if (innerPixel == null)
+                return false;
+
+            fillObject((int)innerPixel.y, (int)innerPixel.x);
+
+            System.out.println("mid point y " + midPoint.y + " x " + midPoint.x);
+
+            exportPaintedFigure("/home/gugu/Pictures/bak/paintedImage.png");
+
+            System.out.println("Painted image: /home/gugu/Pictures/bak/paintedImage.png");
             
         } catch (Exception e) {
 
             e.printStackTrace();
-            System.out.println("refreshFile Exception");
+            System.out.println("refreshImage Exception");
         }
+        
+        return true;
     }
-
+    
     private void calculateMidPoint(){
         
         int maxY = -1, minY = img.getHeight() - 1, maxX = -1, minX = img.getWidth() - 1;
@@ -106,11 +134,11 @@ public class ImageScanner {
     
     private Point findColor(int base_y, int base_x, int color){
         
-        for (int y = base_y; y < img.getHeight(); ++y){
+        for (int y = base_y; y < paintedImage.getHeight(); ++y){
             
-            for (int x = base_x; x < img.getWidth(); ++x){
+            for (int x = base_x; x < paintedImage.getWidth(); ++x){
                 
-                if (img.getRGB(x, y) == color)
+                if (paintedImage.getRGB(x, y) == color)
                     return new Point(y, x);
             }
         }
@@ -120,11 +148,11 @@ public class ImageScanner {
     
     private void fillObject(int y, int x) {
         
-        int pixelColor = img.getRGB(x, y);
+        int pixelColor = paintedImage.getRGB(x, y);
 
         if (pixelColor != ObjContourColor && pixelColor != ObjInnerColor) {
 
-            img.setRGB(x, y, ObjInnerColor);
+            paintedImage.setRGB(x, y, ObjInnerColor);
             //System.out.println("empty pixel " + y + ", " + x);
         } else return;
         
@@ -134,7 +162,7 @@ public class ImageScanner {
             fillObject(y - 1, x);
         }
 
-        if (y + 1 < img.getHeight()) {
+        if (y + 1 < paintedImage.getHeight()) {
 
             fillObject(y + 1, x);
         }
@@ -144,7 +172,7 @@ public class ImageScanner {
             fillObject(y, x - 1);
         }
 
-        if (x + 1 < img.getWidth()) {
+        if (x + 1 < paintedImage.getWidth()) {
 
             fillObject(y, x + 1);
         }
@@ -162,15 +190,17 @@ public class ImageScanner {
 
         boolean coloredPixelSequence = false;
 
-        for (int y = 0; y < img.getHeight(); y += i) {
+        for (int y = 0; y < paintedImage.getHeight(); y += i) {
 
             row = new LinkedList();
 
-            for (int x = 0; x < img.getWidth(); x += i) {
+            for (int x = 0; x < paintedImage.getWidth(); x += i) {
 
-                int pixelColor = img.getRGB(x, y);
+                int pixelColor = paintedImage.getRGB(x, y);
 
                 if (pixelColor == ObjInnerColor || pixelColor == ObjContourColor) {
+                    
+                    //System.out.println("traingulating pixel y " + y + " x " + x);
 
                     coloredPixelSequence = true;
 
@@ -217,6 +247,7 @@ public class ImageScanner {
                     triangles.add(row);
                     row = new LinkedList();
                 }
+                System.out.println("y " + y + "row size " + row.size());
             }
 
             if (coloredPixelSequence) {
@@ -298,7 +329,7 @@ public class ImageScanner {
 
             for (int x = xx + i; x < xx + dimension; ++x) {
 
-                if (img.getRGB(x, y) != ObjInnerColor) {
+                if (paintedImage.getRGB(x, y) != ObjInnerColor) {
 
                     topRightCorner = false;
                     break outerloop;
@@ -334,7 +365,7 @@ public class ImageScanner {
 
             for (int x = xx; x < xx + dimension - i; ++x) {
 
-                if (img.getRGB(x, y) != ObjInnerColor) {
+                if (paintedImage.getRGB(x, y) != ObjInnerColor) {
 
                     topLeftCorner = false;
                     break;
@@ -372,7 +403,7 @@ public class ImageScanner {
 
             for (int x = xx + dimension - 1; x > xx + i; --x) {
 
-                if (img.getRGB(x, y) != ObjInnerColor) {
+                if (paintedImage.getRGB(x, y) != ObjInnerColor) {
 
                     botRightCorner = false;
                     break;
@@ -409,7 +440,7 @@ public class ImageScanner {
 
             for (int x = xx; x < xx + i; ++x) {
 
-                if (img.getRGB(x, y) != ObjInnerColor) {
+                if (paintedImage.getRGB(x, y) != ObjInnerColor) {
 
                     botLeftCorner = false;
                     break outerloop;
@@ -449,11 +480,11 @@ public class ImageScanner {
 
             myWriter.write("#declare Floor =\nplane { y,0\ntexture { Floor_Texture\nscale 0.5\nrotate y*90\nrotate <10, 0, 15>\ntranslate z*4\n}}");
 
-            for (int y = 0; y < img.getHeight(); ++y) {
+            for (int y = 0; y < paintedImage.getHeight(); ++y) {
 
-                for (int x = 0; x < img.getWidth(); ++x) {
+                for (int x = 0; x < paintedImage.getWidth(); ++x) {
 
-                    if (img.getRGB(x, y) == ObjInnerColor) {
+                    if (paintedImage.getRGB(x, y) == ObjInnerColor) {
 
                         float yy = (midPoint.y - y);
                         float xx = (midPoint.x - x);
@@ -496,7 +527,7 @@ public class ImageScanner {
         try {
 
             File outputfile = new File(location);
-            ImageIO.write(img, "png", outputfile);
+            ImageIO.write(paintedImage, "png", outputfile);
         } catch (Exception e) {
 
             System.out.println("exportPaintedFigure exception");
@@ -559,35 +590,5 @@ public class ImageScanner {
 
             e.printStackTrace();
         }
-    }
-    
-    public boolean imageUpdated(){
-        
-        return lastModified != imageFile.lastModified();
-    }
-    
-    public boolean refreshImage(){
-        
-        refreshFile();
-        
-        calculateMidPoint();
-        
-        Point innerPixel = findColor(0, 0, ObjInnerColor);
-        if (innerPixel == null)
-            return false;
-        
-        innerPixel = findColor((int)innerPixel.y, (int)innerPixel.x, ObjEmptyColor);
-        if (innerPixel == null)
-            return false;
-        
-        fillObject((int)innerPixel.y, (int)innerPixel.x);
-        
-        System.out.println("mid point y " + midPoint.y + " x " + midPoint.x);
-        
-        exportPaintedFigure("/home/gugu/Pictures/bak/paintedImage.png");
-        
-        System.out.println("Painted image: /home/gugu/Pictures/bak/paintedImage.png");
-        
-        return true;
     }
 }

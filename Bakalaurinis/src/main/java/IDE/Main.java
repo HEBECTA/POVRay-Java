@@ -36,16 +36,18 @@ public class Main {
     private final String inputImage = "/home/gugu/Pictures/bak/kursinis.png";
     private final String pixelsImage = "/home/gugu/Pictures/bak/pixels.png";
     private final String paintedImage = "/home/gugu/Pictures/bak/paintedImage.png";
+    private final String filledImage = "/home/gugu/Pictures/bak/filled.png";
     private final String finalImage = "/home/gugu/Pictures/bak/final.png";
     
     private final String pixelsImagePovCode = "/home/gugu/Pictures/bak/pixels.pov";
+    private final String filledImagePovCode = "/home/gugu/Pictures/bak/filled.pov";
     private final String finalImagePovCode = "/home/gugu/Pictures/bak/final.pov";
     
     JPanel povRaySettingsTab;
     JPanel paintImageTab;
     JPanel paintedImageTab;
     JPanel pixelsImageTab;
-    JPanel finalImageTab;
+    JPanel filledImageTab;
     
     ImageScanner imageScanner;
     SceneGenerator generator;
@@ -77,14 +79,14 @@ public class Main {
         paintImageTab = new DisplayImage(inputImage);
         paintedImageTab = new DisplayImage(paintedImage);
         pixelsImageTab = new DisplayImage(pixelsImage);
-        finalImageTab = new DisplayImage(finalImage);
+        filledImageTab = new DisplayImage(filledImage);
         tabbedPane = new JTabbedPane();
         
         tabbedPane.add("Pov Ray scene settings", povRaySettingsTab);
         tabbedPane.add("preview paint image", paintImageTab);
         tabbedPane.add("preview painted image", paintedImageTab);
         tabbedPane.add("preview generated pixels", pixelsImageTab);
-        tabbedPane.add("preview final generated object", finalImageTab);
+        tabbedPane.add("preview filled object", filledImageTab);
         
         frame.setJMenuBar(menu);
         frame.add(toolBar, BorderLayout.NORTH);
@@ -147,12 +149,12 @@ public class Main {
             generator.setFloorSettings(floorSettings);
             generator.setTransformationSettings(transformationSettings);
             generator.generatePixelsScene(pixelsImagePovCode, pixelsImage, 0.5f);
-            generator.generateFinalScene(finalImagePovCode, finalImage);
+            generator.generateFinalScene(filledImagePovCode, filledImage);
             
             paintImageTab.repaint();
             paintedImageTab.repaint();
             pixelsImageTab.repaint();
-            finalImageTab.repaint();
+            filledImageTab.repaint();
             
         } catch (Exception e){
             

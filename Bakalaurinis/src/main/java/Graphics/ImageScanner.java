@@ -13,6 +13,7 @@ import java.io.FileWriter;
 import java.util.LinkedList;
 import javax.imageio.ImageIO;
 import IDE.FileOperation;
+import java.util.Iterator;
 
 /**
  *
@@ -27,7 +28,7 @@ public class ImageScanner {
     
     private FigureData figureData;
 
-    LinkedList<LinkedList<Triangle>> triangles;
+    //LinkedList<LinkedList<Triangle>> triangles;
 
     //LinkedList<Triangle> trianglesTest;
     //LinkedList<LinkedList<Point>> pixels;
@@ -50,7 +51,7 @@ public class ImageScanner {
         ObjContourColor = 0xff000000;
         // green
         ObjInnerColor = 0xff22b14c;
-        
+        // white
         ObjEmptyColor = 0xffffffff;
 
         refreshImage();
@@ -60,10 +61,11 @@ public class ImageScanner {
         
         figureData = new FigureData();
         
+        figureData.inflatedTriangles = null;
         figureData.height = height;
         figureData.width = width;
         figureData.midPoint = midPoint;
-        figureData.triangles = getTriangulatedObject(triangleSize);
+        figureData.flatTriangles = getTriangulatedObject(triangleSize);
         figureData.contourPixels = getContourPixels();
         figureData.figureAreaPixels = getFigureAreaPixels();
         
@@ -96,12 +98,6 @@ public class ImageScanner {
                 return false;
 
             fillObject((int)innerPixel.y, (int)innerPixel.x);
-
-            System.out.println("mid point y " + midPoint.y + " x " + midPoint.x);
-
-            exportPaintedFigure("/home/gugu/Pictures/bak/paintedImage.png");
-
-            System.out.println("Painted image: /home/gugu/Pictures/bak/paintedImage.png");
             
         } catch (Exception e) {
 
@@ -198,8 +194,8 @@ public class ImageScanner {
     // triangleSize => opposite and adjacent side size in pixels
     public LinkedList<LinkedList<Triangle>> getTriangulatedObject(int triangleSize) {
         
-        triangles = new LinkedList<>();;
-        LinkedList<Triangle> row;// = new LinkedList();
+        LinkedList<LinkedList<Triangle>> triangles = new LinkedList<>();;
+        LinkedList<Triangle> row;
         
         int i = triangleSize - 1;
         //int i = triangleSize;
@@ -263,7 +259,7 @@ public class ImageScanner {
                     triangles.add(row);
                     row = new LinkedList();
                 }
-                System.out.println("y " + y + "row size " + row.size());
+                //System.out.println("y " + y + "row size " + row.size());
             }
 
             if (coloredPixelSequence) {
@@ -317,7 +313,7 @@ public class ImageScanner {
             }
         } catch (Exception e){
             e.printStackTrace();
-            System.out.println("getFigurePixels Exception");
+            System.out.println("getContourPixels Exception");
         }
 
         return pixels;
@@ -328,6 +324,41 @@ public class ImageScanner {
         LinkedList<LinkedList<Point>> pixels = new LinkedList();
         LinkedList<Point> row = new LinkedList();
         
+        try {
+
+            boolean coloredPixelSequence = false;
+
+            for (int y = 0; y < paintedImage.getHeight(); ++y) {
+
+                for (int x = 0; x < paintedImage.getWidth(); ++x) {
+
+                    int pixelColor = paintedImage.getRGB(x, y);
+
+                    if (pixelColor == ObjInnerColor || pixelColor == ObjContourColor) {
+
+                        coloredPixelSequence = true;
+
+                        row.add(new Point(-(y - midPoint.y), x - midPoint.x));
+                    } else if (coloredPixelSequence) {
+
+                        coloredPixelSequence = false;
+                        pixels.add(row);
+                        row = new LinkedList();
+                    }
+                }
+
+                if (!row.isEmpty()) {
+
+                    pixels.add(row);
+                    row = new LinkedList();
+                }
+
+                coloredPixelSequence = false;
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+            System.out.println("getFigureAreaPixels Exception");
+        }
         
         return pixels;
     }
@@ -480,65 +511,7 @@ public class ImageScanner {
         return triangle;
     }
 
-    public void exportFillPovRay(String location, float radius) {
-
-        try {
-
-            FileWriter myWriter = new FileWriter(location);
-
-            myWriter.write("#include \"colors.inc\"\n#include \"textures.inc\"\n#include \"shapes.inc\"\n#include \"metals.inc\"\n#include \"glass.inc\"\n#include \"woods.inc\"\n");
-            myWriter.write("camera{ location  <0,0,300>\n  angle 40\nright     x*image_width/image_height\nlook_at   <0,0,0>\n}");
-
-            myWriter.write("light_source {<-140,200, 300> rgb <1.0, 1.0, 0.95>*1.5}");
-            myWriter.write("light_source {< 140,200,-300> rgb <0.9, 0.9, 1.00>*0.9 shadowless}");
-
-            myWriter.write("#declare Floor_Texture =\ntexture { pigment { P_WoodGrain18A color_map { M_Wood18A }}}\ntexture { pigment { P_WoodGrain12A color_map { M_Wood18B }}}\ntexture {\npigment { P_WoodGrain12B color_map { M_Wood18B }}\nfinish { reflection 0.25 }\n}");
-
-            myWriter.write("#declare Floor =\nplane { y,0\ntexture { Floor_Texture\nscale 0.5\nrotate y*90\nrotate <10, 0, 15>\ntranslate z*4\n}}");
-
-            for (int y = 0; y < paintedImage.getHeight(); ++y) {
-
-                for (int x = 0; x < paintedImage.getWidth(); ++x) {
-
-                    if (paintedImage.getRGB(x, y) == ObjInnerColor) {
-
-                        float yy = (midPoint.y - y);
-                        float xx = (midPoint.x - x);
-
-                        if (y % 2 == 0 && x % 2 == 0) {
-
-                            myWriter.write("sphere{<" + yy + "," + xx + ",0>," + radius);
-                            myWriter.write("pigment{Red}}\n");
-                        } else if (y % 2 == 1 && x % 2 == 0) {
-
-                            myWriter.write("sphere{<" + yy + "," + xx + ",0>," + radius);
-                            myWriter.write("pigment{Green}}\n");
-                        } else if (y % 2 == 0 && x % 2 == 1) {
-
-                            myWriter.write("sphere{<" + yy + "," + xx + ",0>," + radius);
-                            myWriter.write("pigment{Blue}}\n");
-                        } else {
-
-                            myWriter.write("sphere{<" + yy + "," + xx + ",0>," + radius);
-                            myWriter.write("pigment{Yellow}}\n");
-                        }
-                    }
-                }
-            }
-
-            myWriter.write("\n");
-
-            myWriter.close();
-
-        } catch (Exception e) {
-
-            System.out.println("Exception file export, Object class, exportPovRay function");
-
-            e.printStackTrace();
-        }
-    }
-
-    private void exportPaintedFigure(String location) {
+    public void exportPaintedFigure(String location) {
 
         try {
 
@@ -549,62 +522,35 @@ public class ImageScanner {
             System.out.println("exportPaintedFigure exception");
         }
     }
+    
+    public void printTriangles(LinkedList<LinkedList<Triangle>> triangles){
+        
+        int i = 0;
+        int k = 0;
+        
+        Iterator<LinkedList<Triangle>> rowIt = triangles.iterator();
+        outerloop:
+            while ( rowIt.hasNext() ){
 
-    public void exportPovRayPixels(String location, float pixelRadius) {
+                LinkedList<Triangle> row = rowIt.next();
 
-        try {
+                Iterator<Triangle> triangleIt = row.iterator();
+                //outerloop:
+                while ( triangleIt.hasNext() ){
 
-            FileWriter myWriter = new FileWriter(location);
-
-            myWriter.write("#include \"colors.inc\"\n#include \"textures.inc\"\n#include \"shapes.inc\"\n#include \"metals.inc\"\n#include \"glass.inc\"\n#include \"woods.inc\"\n");
-            myWriter.write("camera{ location  <0,0,300>\n  angle 40\nright     x*image_width/image_height\nlook_at   <0,0,0>\n}");
-
-            myWriter.write("light_source {<-140,200, 300> rgb <1.0, 1.0, 0.95>*1.5}");
-            myWriter.write("light_source {< 140,200,-300> rgb <0.9, 0.9, 1.00>*0.9 shadowless}");
-
-            myWriter.write("#declare Floor_Texture =\ntexture { pigment { P_WoodGrain18A color_map { M_Wood18A }}}\ntexture { pigment { P_WoodGrain12A color_map { M_Wood18B }}}\ntexture {\npigment { P_WoodGrain12B color_map { M_Wood18B }}\nfinish { reflection 0.25 }\n}");
-
-            myWriter.write("#declare Floor =\nplane { y,0\ntexture { Floor_Texture\nscale 0.5\nrotate y*90\nrotate <10, 0, 15>\ntranslate z*4\n}}");
-
-            for (int y = 0; y < img.getHeight(); ++y) {
-
-                for (int x = 0; x < img.getWidth(); ++x) {
-
-                    if (img.getRGB(x, y) == ObjInnerColor) {
-
-                        float yy = (midPoint.y - y);
-                        float xx = (midPoint.x - x);
-
-                        if (y % 2 == 0 && x % 2 == 0) {
-
-                            myWriter.write("sphere{<" + yy + "," + xx + ",0>," + pixelRadius);
-                            myWriter.write("pigment{Red}}\n");
-                        } else if (y % 2 == 1 && x % 2 == 0) {
-
-                            myWriter.write("sphere{<" + yy + "," + xx + ",0>," + pixelRadius);
-                            myWriter.write("pigment{Green}}\n");
-                        } else if (y % 2 == 0 && x % 2 == 1) {
-
-                            myWriter.write("sphere{<" + yy + "," + xx + ",0>," + pixelRadius);
-                            myWriter.write("pigment{Blue}}\n");
-                        } else {
-
-                            myWriter.write("sphere{<" + yy + "," + xx + ",0>," + pixelRadius);
-                            myWriter.write("pigment{Yellow}}\n");
-                        }
-                    }
+                    Triangle triangle = triangleIt.next();
+                    
+                    System.out.println("<"+triangle.p1.x+", "+triangle.p1.y+", "+triangle.p1.z+">, ");
+                    System.out.println("<"+triangle.p2.x+", "+triangle.p2.y+", "+triangle.p2.z+">, ");
+                    System.out.println("<"+triangle.p3.x+", "+triangle.p3.y+", "+triangle.p3.z+">}\n");
+                    ++k;
+                    if (k > 10)
+                        break outerloop;
+                        
                 }
+                ++i;
+                if ( i > 25)
+                    return;
             }
-
-            myWriter.write("\n");
-
-            myWriter.close();
-
-        } catch (Exception e) {
-
-            System.out.println("Exception file export, Object class, exportPovRay function");
-
-            e.printStackTrace();
-        }
     }
 }

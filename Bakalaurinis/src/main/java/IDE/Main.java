@@ -10,6 +10,7 @@ package IDE;
  * @author GUGU
  */
 import Engine.SceneGenerator;
+import Graphics.FigureData;
 import Graphics.ImageScanner;
 import Graphics.Object3D;
 import java.awt.BorderLayout;
@@ -37,20 +38,21 @@ public class Main {
     private final String pixelsImage = "/home/gugu/Pictures/bak/pixels.png";
     private final String paintedImage = "/home/gugu/Pictures/bak/paintedImage.png";
     private final String filledImage = "/home/gugu/Pictures/bak/filled.png";
-    private final String finalImage = "/home/gugu/Pictures/bak/final.png";
+    private final String inflatedImage = "/home/gugu/Pictures/bak/inflated.png";
     
     private final String pixelsImagePovCode = "/home/gugu/Pictures/bak/pixels.pov";
     private final String filledImagePovCode = "/home/gugu/Pictures/bak/filled.pov";
-    private final String finalImagePovCode = "/home/gugu/Pictures/bak/final.pov";
+    private final String inflatedImagePovCode = "/home/gugu/Pictures/bak/inflated.pov";
     
     JPanel povRaySettingsTab;
     JPanel paintImageTab;
     JPanel paintedImageTab;
     JPanel pixelsImageTab;
     JPanel filledImageTab;
+    JPanel inflatedImageTab;
     
     ImageScanner imageScanner;
-    SceneGenerator generator;
+    SceneGenerator sceneWriter;
     Object3D generator3D;
     
     Main() throws IOException{
@@ -60,7 +62,7 @@ public class Main {
         File imageFile = new File(inputImage);
         imageScanner = new ImageScanner(imageFile);
         
-        generator = new SceneGenerator();
+        sceneWriter = new SceneGenerator();
         generator3D = new Object3D();
         
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -80,6 +82,7 @@ public class Main {
         paintedImageTab = new DisplayImage(paintedImage);
         pixelsImageTab = new DisplayImage(pixelsImage);
         filledImageTab = new DisplayImage(filledImage);
+        inflatedImageTab = new DisplayImage(inflatedImage);
         tabbedPane = new JTabbedPane();
         
         tabbedPane.add("Pov Ray scene settings", povRaySettingsTab);
@@ -87,6 +90,7 @@ public class Main {
         tabbedPane.add("preview painted image", paintedImageTab);
         tabbedPane.add("preview generated pixels", pixelsImageTab);
         tabbedPane.add("preview filled object", filledImageTab);
+        tabbedPane.add("preview inflated object", inflatedImageTab);
         
         frame.setJMenuBar(menu);
         frame.add(toolBar, BorderLayout.NORTH);
@@ -125,6 +129,8 @@ public class Main {
         
         try {
             
+            FigureData data = new FigureData();
+            
             String cameraSettings = PovRaySettings.cameraText.getText();
             String floorSettings = PovRaySettings.floorText.getText();
             String lightSettings = PovRaySettings.lightText.getText();
@@ -135,23 +141,38 @@ public class Main {
                 System.out.println("imageScanner.refreshImage failed !");
                 return;
             }
+            imageScanner.exportPaintedFigure(paintedImage);
             int traingleSize = 2;
-            generator.setFigureData(imageScanner.getFigureData(traingleSize));
+            int inflationDepth = 30;
+            data = imageScanner.getFigureData(traingleSize);
             
-            generator.setCameraSettings(cameraSettings);
-            generator.setLightSettings(lightSettings);
-            generator.setFloorSettings(floorSettings);
-            generator.setTransformationSettings(transformationSettings);
-            generator.generatePixelsScene(pixelsImagePovCode, pixelsImage, 0.5f);
-            generator.generateFinalScene(filledImagePovCode, filledImage);
+            imageScanner.printTriangles(data.flatTriangles);
+            
+            generator3D.setFigureData(data);
+            data.inflatedTriangles = generator3D.getInflatedFigure(inflationDepth);
+            imageScanner.printTriangles(data.flatTriangles);
+            sceneWriter.setFigureData(data);
+            
+            sceneWriter.setCameraSettings(cameraSettings);
+            sceneWriter.setLightSettings(lightSettings);
+            sceneWriter.setFloorSettings(floorSettings);
+            sceneWriter.setTransformationSettings(transformationSettings);
+            sceneWriter.generatePixelsScene(pixelsImagePovCode, pixelsImage, 0.5f);
+            sceneWriter.generateFlatFigureScene(filledImagePovCode, filledImage);
+            sceneWriter.generateInflatedFigureScene(inflatedImagePovCode, inflatedImage);
+            
+            System.out.println("Tas pats triangles");
+            imageScanner.printTriangles(sceneWriter.figureData.flatTriangles);
             
             paintImageTab.repaint();
             paintedImageTab.repaint();
             pixelsImageTab.repaint();
             filledImageTab.repaint();
+            inflatedImageTab.repaint();
             
         } catch (Exception e){
-            
+            e.printStackTrace();
+            System.out.println("Main: refreshTabs exception");
         }
     }
 }

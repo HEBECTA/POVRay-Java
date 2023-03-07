@@ -13,6 +13,13 @@ public class Point {
     
     public float y, x, z;
     
+    public Point(Point p){
+     
+        this.x = p.x;
+        this.y = p.y;
+        this.z = p.z;
+    }
+    
     public Point(float y, float x){
         
         this.y = y;

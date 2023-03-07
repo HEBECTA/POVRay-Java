@@ -13,7 +13,8 @@ import java.util.LinkedList;
  */
 public class FigureData {
     
-    public LinkedList<LinkedList<Triangle>> triangles;
+    public LinkedList<LinkedList<Triangle>> flatTriangles;
+    public LinkedList<Triangle> inflatedTriangles;
     public LinkedList<LinkedList<Point>> contourPixels;
     public LinkedList<LinkedList<Point>> figureAreaPixels;
     

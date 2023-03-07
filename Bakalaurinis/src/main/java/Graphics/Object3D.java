@@ -8,6 +8,8 @@ package Graphics;
 import Graphics.Triangle;
 import Graphics.Point;
 import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -17,13 +19,20 @@ import java.util.LinkedList;
  */
 public class Object3D {
     
-    LinkedList<LinkedList<Triangle>> triangles;
+    private FigureData figureData;
+    
+    //private LinkedList<LinkedList<Point>> pixels;
+    private LinkedList<LinkedList<Triangle>> triangles;
     
     LinkedList<Triangle> finalTriangles;
    
     Matrix matrix;
     
     public int width;
+    
+    public Object3D(){
+        
+    }
     
     public Object3D(LinkedList<LinkedList<Triangle>> triangles, int width){
         
@@ -79,11 +88,17 @@ public class Object3D {
             
             triangles.add(trianglesRow);
         }
-        
-        
     }
     
-    public void inflate(float dept){
+    public void setFigureData(FigureData figureData){
+        
+        //this.figureData = figureData;
+        width = figureData.width;
+        //pixels = figureData.figureAreaPixels;
+        triangles = copyLinkedList(figureData.flatTriangles);  
+    }
+    
+    public LinkedList<Triangle> getInflatedFigure(float dept){
         
         finalTriangles = new LinkedList();
         
@@ -376,216 +391,45 @@ public class Object3D {
             
             System.out.println();
         }
+        
+        return finalTriangles;
     }
     
-    public void exportPovRay(String location){
+    private LinkedList<LinkedList<Triangle>> copyLinkedList(LinkedList<LinkedList<Triangle>> list){
         
-        try {
-
-            FileWriter myWriter = new FileWriter(location);
-
-            myWriter.write("#include \"colors.inc\"\n#include \"textures.inc\"\n#include \"shapes.inc\"\n#include \"metals.inc\"\n#include \"glass.inc\"\n#include \"woods.inc\"\n"); 
-            myWriter.write("camera{ location  <0,0, -300>\n  angle 40\nright     x*image_width/image_height\nlook_at   <0,0,0>\n}");   
- 
-
-            myWriter.write("light_source {<-140,200, 300> rgb <1.0, 1.0, 0.95>*1.5}");
-            myWriter.write("light_source {< 140,200,-300> rgb <0.9, 0.9, 1.00>*0.9 shadowless}");          
-
-            myWriter.write("#declare Floor_Texture =\ntexture { pigment { P_WoodGrain18A color_map { M_Wood18A }}}\ntexture { pigment { P_WoodGrain12A color_map { M_Wood18B }}}\ntexture {\npigment { P_WoodGrain12B color_map { M_Wood18B }}\nfinish { reflection 0.25 }\n}");
-
-            myWriter.write("#declare Floor =\nplane { y,0\ntexture { Floor_Texture\nscale 0.5\nrotate y*90\nrotate <10, 0, 15>\ntranslate z*4\n}}");
-            
-            Iterator<LinkedList<Triangle>> rowIt = triangles.iterator();
+        LinkedList<LinkedList<Triangle>> retList = new LinkedList<LinkedList<Triangle>>();
         
-            myWriter.write("mesh\n{");
-            
+        Iterator<LinkedList<Triangle>> rowIt = list.iterator();
+        
             while ( rowIt.hasNext() ){
+                
+                LinkedList<Triangle> retRow = new LinkedList<Triangle>();
 
                 LinkedList<Triangle> row = rowIt.next();
 
                 Iterator<Triangle> triangleIt = row.iterator();
-
+                //outerloop:
                 while ( triangleIt.hasNext() ){
 
                     Triangle triangle = triangleIt.next();
                     
-                    myWriter.write("triangle{");
-
-                    myWriter.write("<"+triangle.p1.x+", "+triangle.p1.y+", "+triangle.p1.z+">, ");
-                    myWriter.write("<"+triangle.p2.x+", "+triangle.p2.y+", "+triangle.p2.z+">, ");
-                    myWriter.write("<"+triangle.p3.x+", "+triangle.p3.y+", "+triangle.p3.z+">}\n");
-                    
-                    //System.out.println("Triangle");
-                    //System.out.println("<"+triangle.p1.x+", "+triangle.p1.y+", "+triangle.p1.z+">, ");
-                    //System.out.println("<"+triangle.p2.x+", "+triangle.p2.y+", "+triangle.p2.z+">, ");
-                    //System.out.println("<"+triangle.p3.x+", "+triangle.p3.y+", "+triangle.p3.z+">}\n");
-                    
+                    retRow.add(new Triangle(triangle));
                 }
-            }
-            
-            myWriter.write("texture{ pigment { color rgb<0, 1, 0>}}");
-
-            myWriter.write("\n}");
-            
-            myWriter.close();
-
-        }
-        catch ( Exception e){
-            
-            System.out.println("Exception file export, Object class, exportPovRay function");
-            
-            e.printStackTrace();
-        }
-    }
-    
-    public void exportPovRayTest(String location, float radius){
-        
-        try {
-
-            FileWriter myWriter = new FileWriter(location);
-
-            
-            myWriter.write("#include \"colors.inc\"\n#include \"textures.inc\"\n#include \"shapes.inc\"\n#include \"metals.inc\"\n#include \"glass.inc\"\n#include \"woods.inc\"\n\n\n"); 
-            myWriter.write("camera{ location  <0,0, -800>\n          angle 40\n          right     x*image_width/image_height\n          look_at   <0,0,0>\n}\n\n");   
- 
-
-            myWriter.write("light_source {<-140,200, 300> rgb <1.0, 1.0, 0.95>*1.5}\n");
-            myWriter.write("light_source {< 140,200,-300> rgb <0.9, 0.9, 1.00>*0.9 shadowless}\n\n");          
-
-            myWriter.write("#declare Floor_Texture =\n      texture { pigment { P_WoodGrain18A color_map { M_Wood18A }}}\n      texture { pigment { P_WoodGrain12A color_map { M_Wood18B }}}\n      texture {\n         pigment { P_WoodGrain12B color_map { M_Wood18B }}\n         finish { reflection 0.25 }\n}\n\n");
-
-            myWriter.write("#declare Floor =\nplane { y, 0\n     texture { Floor_Texture\n           scale 0.5\n           rotate y*90\n           rotate <10, 0, 15>\n           translate z*4\n     }\n}\n");
-            
-            Iterator<Triangle> rowIt = finalTriangles.iterator();
-        
-            myWriter.write("mesh\n{");
-    
-            while ( rowIt.hasNext() ){
-
-                    Triangle triangle = rowIt.next();
-                    myWriter.write("triangle{");
-
-                    myWriter.write("<"+triangle.p1.x+", "+triangle.p1.y+", "+triangle.p1.z+">, ");
-                    myWriter.write("<"+triangle.p2.x+", "+triangle.p2.y+", "+triangle.p2.z+">, ");
-                    myWriter.write("<"+triangle.p3.x+", "+triangle.p3.y+", "+triangle.p3.z+">}\n");
-            }
-            
-            myWriter.write("texture{ pigment { color rgb<0, 1, 0>}}\n");
-            
-            myWriter.write("scale <1, 1, 0.5>\n");
-            myWriter.write("rotate <0, -60, 0>");
-
-            myWriter.write("\n}");
-            /*
-            rowIt = finalTriangles.iterator();
-            
-            while ( rowIt.hasNext() ){
-
-                    Triangle triangle = rowIt.next();
-                    myWriter.write("sphere{<"+triangle.p1.x+", "+triangle.p1.y+", "+triangle.p1.z+">, " + radius + "\npigment {Red}\n}");
-                    myWriter.write("sphere{<"+triangle.p2.x+", "+triangle.p2.y+", "+triangle.p2.z+">, " + radius + "\npigment {Red}\n}");
-                    myWriter.write("sphere{<"+triangle.p3.x+", "+triangle.p3.y+", "+triangle.p3.z+">, " + radius + "\npigment {Red}\n}");
-            }
-           
-            myWriter.write("\n");
-            */
-            myWriter.close();
-
-        }
-        catch ( Exception e){
-            
-            System.out.println("Exception file export, Object class, exportPovRay function");
-            
-            e.printStackTrace();
-        }
-    }
-    
-    public void printTriangles(){
-        
-        Iterator<LinkedList<Triangle>> rowIt = triangles.iterator();
-        
-        while ( rowIt.hasNext() ){
-            
-            LinkedList<Triangle> row = rowIt.next();
-            
-            Iterator<Triangle> triangleIt = row.iterator();
-            
-            while ( triangleIt.hasNext() ){
                 
-                Triangle triangle = triangleIt.next();
-                
-                triangle.print();
-            }
-        }
-    }
-    
-    public void printTrianglesTest(){
-        
-        Iterator<Triangle> triangleIt = finalTriangles.iterator();
-        
-        while ( triangleIt.hasNext() ){
-            
-            Triangle triangle = triangleIt.next();
-            
-            triangle.print();
-            System.out.println();
-        }
-    }
-    
-    public void exportTriangulated(String location, float radius){
-        
-        try {
-
-            FileWriter myWriter = new FileWriter(location);
-
-            myWriter.write("#include \"colors.inc\"\n#include \"textures.inc\"\n#include \"shapes.inc\"\n#include \"metals.inc\"\n#include \"glass.inc\"\n#include \"woods.inc\"\n"); 
-            myWriter.write("camera{ location  <0,0, -300>\n  angle 40\nright     x*image_width/image_height\nlook_at   <0,0,0>\n}");   
- 
-
-            myWriter.write("light_source {<-140,200, 300> rgb <1.0, 1.0, 0.95>*1.5}");
-            myWriter.write("light_source {< 140,200,-300> rgb <0.9, 0.9, 1.00>*0.9 shadowless}");          
-
-            myWriter.write("#declare Floor_Texture =\ntexture { pigment { P_WoodGrain18A color_map { M_Wood18A }}}\ntexture { pigment { P_WoodGrain12A color_map { M_Wood18B }}}\ntexture {\npigment { P_WoodGrain12B color_map { M_Wood18B }}\nfinish { reflection 0.25 }\n}");
-
-            myWriter.write("#declare Floor =\nplane { y,0\ntexture { Floor_Texture\nscale 0.5\nrotate y*90\nrotate <10, 0, 15>\ntranslate z*4\n}}");
-            
-            Iterator<LinkedList<Triangle>> rowIt = triangles.iterator();
-        
-            myWriter.write("sphere_sweep\n{");
-            
-            myWriter.write(triangles.size()*3+",\n");
-            
-            while ( rowIt.hasNext() ){
-
-                LinkedList<Triangle> row = rowIt.next();
-
-                Iterator<Triangle> triangleIt = row.iterator();
-
-                while ( triangleIt.hasNext() ){
-
-                    Triangle triangle = triangleIt.next();
-                    
-     
-
-                    myWriter.write("<"+triangle.p1.x+", "+triangle.p1.y+", "+triangle.p1.z+">, " + radius);
-                    myWriter.write("<"+triangle.p2.x+", "+triangle.p2.y+", "+triangle.p2.z+">, " + radius);
-                    myWriter.write("<"+triangle.p3.x+", "+triangle.p3.y+", "+triangle.p3.z+">, " + radius);
-                }
+                retList.add(retRow);
             }
             
-            myWriter.write("pigment { color rgb<0, 1, 0>}");
-
-            myWriter.write("\n}");
-            
-            myWriter.close();
-
-        }
-        catch ( Exception e){
-            
-            System.out.println("Exception file export, Object class, exportPovRay function");
-            
-            e.printStackTrace();
-        }
+        return retList;
+    }
+    /*
+    public void setFigureAreaPixels(LinkedList<LinkedList<Point>> pixels){
+        
+        this.pixels = pixels;
+    }
+    
+    public void setFlatFigureTriangles(LinkedList<LinkedList<Triangle>> triangles){
+        
+        this.triangles = triangles;
     }
     
     public void scale(float y, float x, float z){
@@ -665,4 +509,5 @@ public class Object3D {
         
         return 0;
     }
+*/
 }

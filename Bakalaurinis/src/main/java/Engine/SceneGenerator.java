@@ -24,7 +24,7 @@ public class SceneGenerator {
     private String floorSettings;
     private String transformationsSettings;
     
-    private FigureData figureData;
+    public FigureData figureData;
     
     public void setFigureData(FigureData figureData){
         
@@ -49,6 +49,7 @@ public class SceneGenerator {
     public void setTransformationSettings(String settings){
         transformationsSettings = settings;
     }
+    
     
     public void generatePixelsScene(String inputLocation, String outputLocation, float pixelRadius){
         
@@ -130,7 +131,7 @@ public class SceneGenerator {
         executePovRay(inputLocation, outputLocation);
     }
     
-    public void generateFinalScene(String inputLocation, String outputLocation){
+    public void generateFlatFigureScene(String inputLocation, String outputLocation){
         
         try {
 
@@ -142,7 +143,7 @@ public class SceneGenerator {
             myWriter.write(lightSettings);
             myWriter.write(floorSettings);          
 
-            Iterator<LinkedList<Triangle>> rowIt = figureData.triangles.iterator();
+            Iterator<LinkedList<Triangle>> rowIt = figureData.flatTriangles.iterator();
         
             myWriter.write("\nmesh\n{\n");
             
@@ -162,6 +163,54 @@ public class SceneGenerator {
                     myWriter.write("<"+triangle.p2.x+", "+triangle.p2.y+", "+triangle.p2.z+">, ");
                     myWriter.write("<"+triangle.p3.x+", "+triangle.p3.y+", "+triangle.p3.z+">}\n");
                 }
+            }
+            
+            myWriter.write("\n"+transformationsSettings+"\n");  
+            
+            myWriter.write("\n}");  
+
+            myWriter.write("\n");
+            
+            myWriter.close();
+        }
+        catch ( Exception e){
+            
+            System.out.println("Exception generateFinalScene myWriter");
+            
+            e.printStackTrace();
+            
+            return;
+        }
+        
+        executePovRay(inputLocation, outputLocation);
+    }
+    
+    public void generateInflatedFigureScene(String inputLocation, String outputLocation){
+        
+        try {
+
+            FileWriter myWriter = new FileWriter(inputLocation);
+
+            myWriter.write("#include \"colors.inc\"\n#include \"textures.inc\"\n#include \"shapes.inc\"\n#include \"metals.inc\"\n#include \"glass.inc\"\n#include \"woods.inc\"\n"); 
+            myWriter.write(cameraSettings);
+ 
+            myWriter.write(lightSettings);
+            myWriter.write(floorSettings);          
+
+            Iterator<Triangle> it = figureData.inflatedTriangles.iterator();
+        
+            myWriter.write("\nmesh\n{\n");
+            
+            while ( it.hasNext() ){
+
+                Triangle triangle = it.next();
+                    
+                myWriter.write("triangle {");
+
+                myWriter.write("<"+triangle.p1.x+", "+triangle.p1.y+", "+triangle.p1.z+">, ");
+                myWriter.write("<"+triangle.p2.x+", "+triangle.p2.y+", "+triangle.p2.z+">, ");
+                myWriter.write("<"+triangle.p3.x+", "+triangle.p3.y+", "+triangle.p3.z+">}\n");
+                
             }
             
             myWriter.write("\n"+transformationsSettings+"\n");  

@@ -52,7 +52,8 @@ public class PovRaySettings extends JPanel {
         transformationText.setText("texture {\n" +
         "      pigment { color rgb<0.9, 0.9, 0.9> }\n" +
         "      finish { ambient 0.2 diffuse 0.7 }\n" +
-        "    }");
+        "    }\n" +
+        "rotate <0, 0, 0>");
 
         setLayout(new GridLayout(1, 4, 20, 20));
         

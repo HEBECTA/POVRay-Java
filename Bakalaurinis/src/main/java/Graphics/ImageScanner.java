@@ -23,7 +23,7 @@ public class ImageScanner {
 
     //private FileOperation fileHandler; 
     private File imageFile;
-    private BufferedImage img;
+    private BufferedImage originalImage;
     private BufferedImage paintedImage;
     
     private FigureData figureData;
@@ -37,7 +37,8 @@ public class ImageScanner {
     private int ObjInnerColor;
     private int ObjEmptyColor;
 
-    Point midPoint;
+    int maxY, minY;
+    int maxX, minX;
     public int width;
     public int height;
     
@@ -50,7 +51,7 @@ public class ImageScanner {
         // black
         ObjContourColor = 0xff000000;
         // green
-        ObjInnerColor = 0xff22b14c;
+        ObjInnerColor = 0xff22b14c; // 34 177 76
         // white
         ObjEmptyColor = 0xffffffff;
 
@@ -61,13 +62,12 @@ public class ImageScanner {
         
         figureData = new FigureData();
         
-        figureData.inflatedTriangles = null;
         figureData.height = height;
         figureData.width = width;
-        figureData.midPoint = midPoint;
-        figureData.flatTriangles = getTriangulatedObject(triangleSize);
+        figureData.midPoint = getMidPoint();
         figureData.contourPixels = getContourPixels();
-        figureData.figureAreaPixels = getFigureAreaPixels();
+        figureData.flatAreaPixels = getFlatAreaPixels();
+        //figureData.flatTriangles = getTriangulatedObject(triangleSize);
         
         return figureData;
     }
@@ -84,10 +84,10 @@ public class ImageScanner {
             if (imageFile.exists()){
                 
                 paintedImage = ImageIO.read(imageFile);
-                img = ImageIO.read(imageFile);
+                originalImage = ImageIO.read(imageFile);
             }
            
-            calculateMidPoint();
+            calculateDimensions();
         
             Point innerPixel = findColor(0, 0, ObjInnerColor);
             if (innerPixel == null)
@@ -108,88 +108,102 @@ public class ImageScanner {
         return true;
     }
     
-    private void calculateMidPoint(){
+    public Point getMidPoint(){
         
-        int maxY = -1, minY = img.getHeight() - 1, maxX = -1, minX = img.getWidth() - 1;
+        return new Point(minY + (maxY - minY) / 2, minX + (maxX - minX) / 2);
+    }
+    
+    public LinkedList<LinkedList<LinkedList<Point>>> getContourPixels() {
+                   
+        LinkedList<LinkedList<LinkedList<Point>>> pixels = new LinkedList<>();
+        LinkedList<LinkedList<Point>> linesList = new LinkedList<>();
+        LinkedList<Point> linePixelsList = new LinkedList<>();
+        
+        boolean coloredPixelSequence = false;
+        
+        for (int y = 0; y < originalImage.getHeight(); ++y) {
 
-            for (int y = 0; y < img.getHeight(); ++y) {
+                for (int x = 0; x < originalImage.getWidth(); ++x) {
 
-                for (int x = 0; x < img.getWidth(); ++x) {
+                    int pixelColor = originalImage.getRGB(x, y);
 
-                    int pixelColor = img.getRGB(x, y);
+                    if (pixelColor == ObjInnerColor || pixelColor == ObjContourColor) {
 
-                    if (pixelColor == ObjContourColor) {
+                        coloredPixelSequence = true;
+                        linePixelsList.add(new Point(-y, x));
+                    }
+                    else if (coloredPixelSequence) {
 
-                        if (maxY < y) {
-                            maxY = y;
-                        }
-
-                        if (minY > y) {
-                            minY = y;
-                        }
-
-                        if (maxX < x) {
-                            maxX = x;
-                        }
-
-                        if (minX > x) {
-                            minX = x;
-                        }
+                        coloredPixelSequence = false;
+                        linesList.add(linePixelsList);
+                        linePixelsList = new LinkedList();
                     }
                 }
-            }
 
-            midPoint = new Point(minY + (maxY - minY) / 2, minX + (maxX - minX) / 2);
-            width = maxX - minX;
-            height = maxY - minY;
-    }
-    
-    private Point findColor(int base_y, int base_x, int color){
-        
-        for (int y = base_y; y < paintedImage.getHeight(); ++y){
-            
-            for (int x = base_x; x < paintedImage.getWidth(); ++x){
+                if (!linePixelsList.isEmpty()) {
+
+                    linesList.add(linePixelsList);
+                    linePixelsList = new LinkedList();
+                }
                 
-                if (paintedImage.getRGB(x, y) == color)
-                    return new Point(y, x);
+                if (!linesList.isEmpty()) {
+
+                    pixels.add(linesList);
+                    linesList = new LinkedList();
+                }
+
+                coloredPixelSequence = false;
             }
-        }
         
-        return null;
+        return pixels;
     }
     
-    private void fillObject(int y, int x) {
+    public LinkedList<LinkedList<LinkedList<Point>>> getFlatAreaPixels(){
         
-        int pixelColor = paintedImage.getRGB(x, y);
-
-        if (pixelColor != ObjContourColor && pixelColor != ObjInnerColor) {
-
-            paintedImage.setRGB(x, y, ObjInnerColor);
-            //System.out.println("empty pixel " + y + ", " + x);
-        } else return;
+        LinkedList<LinkedList<LinkedList<Point>>> pixels = new LinkedList<>();
+        LinkedList<LinkedList<Point>> linesList = new LinkedList<>();
+        LinkedList<Point> linePixelsList = new LinkedList<>();
         
+        boolean coloredPixelSequence = false;
+        
+        for (int y = 0; y < paintedImage.getHeight(); ++y) {
 
-        if (y - 1 >= 0) {
+                for (int x = 0; x < paintedImage.getWidth(); ++x) {
 
-            fillObject(y - 1, x);
-        }
+                    int pixelColor = paintedImage.getRGB(x, y);
 
-        if (y + 1 < paintedImage.getHeight()) {
+                    if (pixelColor == ObjInnerColor || pixelColor == ObjContourColor) {
 
-            fillObject(y + 1, x);
-        }
+                        coloredPixelSequence = true;
+                        linePixelsList.add(new Point(-y, x));
+                    }
+                    else if (coloredPixelSequence) {
 
-        if (x - 1 >= 0) {
+                        coloredPixelSequence = false;
+                        linesList.add(linePixelsList);
+                        linePixelsList = new LinkedList();
+                    }
+                }
 
-            fillObject(y, x - 1);
-        }
+                if (!linePixelsList.isEmpty()) {
 
-        if (x + 1 < paintedImage.getWidth()) {
+                    linesList.add(linePixelsList);
+                    linePixelsList = new LinkedList();
+                }
+                
+                if (!linesList.isEmpty()) {
 
-            fillObject(y, x + 1);
-        }
+                    pixels.add(linesList);
+                    linesList = new LinkedList();
+                }
+
+                coloredPixelSequence = false;
+            }
+        
+        return pixels;
     }
-
+    
+    /*
     // check boundaries
     // triangleSize => opposite and adjacent side size in pixels
     public LinkedList<LinkedList<Triangle>> getTriangulatedObject(int triangleSize) {
@@ -216,10 +230,10 @@ public class ImageScanner {
 
                     coloredPixelSequence = true;
 
-                    Triangle tTopRight = triangulateTopRight(y, x, triangleSize);
-                    Triangle tTopLeft = triangulateTopLeft(y, x, triangleSize);
-                    Triangle tBotRight = triangulateBotRight(y, x, triangleSize);
-                    Triangle tBotLeft = triangulateBotLeft(y, x, triangleSize);
+                    Triangle tTopRight = Triangle.triangulateTopRight(y, x, triangleSize, paintedImage, ObjInnerColor);
+                    Triangle tTopLeft = Triangle.triangulateTopLeft(y, x, triangleSize, paintedImage, ObjInnerColor);
+                    Triangle tBotRight = Triangle.triangulateBotRight(y, x, triangleSize, paintedImage, ObjInnerColor);
+                    Triangle tBotLeft = Triangle.triangulateBotLeft(y, x, triangleSize, paintedImage, ObjInnerColor);
 
                     if (tTopRight != null || tBotLeft != null) {
 
@@ -271,246 +285,7 @@ public class ImageScanner {
 
         return triangles;
     }
-
-    public LinkedList<LinkedList<Point>> getContourPixels() {
-                   
-        LinkedList<LinkedList<Point>> pixels = new LinkedList();
-        LinkedList<Point> row = new LinkedList();
-        
-        try {
-
-            img.flush();
-            img = ImageIO.read(imageFile);
-
-            boolean coloredPixelSequence = false;
-
-            for (int y = 0; y < img.getHeight(); ++y) {
-
-                for (int x = 0; x < img.getWidth(); ++x) {
-
-                    int pixelColor = img.getRGB(x, y);
-
-                    if (pixelColor == ObjInnerColor || pixelColor == ObjContourColor) {
-
-                        coloredPixelSequence = true;
-
-                        row.add(new Point(-(y - midPoint.y), x - midPoint.x));
-                    } else if (coloredPixelSequence) {
-
-                        coloredPixelSequence = false;
-                        pixels.add(row);
-                        row = new LinkedList();
-                    }
-                }
-
-                if (!row.isEmpty()) {
-
-                    pixels.add(row);
-                    row = new LinkedList();
-                }
-
-                coloredPixelSequence = false;
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-            System.out.println("getContourPixels Exception");
-        }
-
-        return pixels;
-    }
-    
-    public LinkedList<LinkedList<Point>> getFigureAreaPixels(){
-        
-        LinkedList<LinkedList<Point>> pixels = new LinkedList();
-        LinkedList<Point> row = new LinkedList();
-        
-        try {
-
-            boolean coloredPixelSequence = false;
-
-            for (int y = 0; y < paintedImage.getHeight(); ++y) {
-
-                for (int x = 0; x < paintedImage.getWidth(); ++x) {
-
-                    int pixelColor = paintedImage.getRGB(x, y);
-
-                    if (pixelColor == ObjInnerColor || pixelColor == ObjContourColor) {
-
-                        coloredPixelSequence = true;
-
-                        row.add(new Point(-(y - midPoint.y), x - midPoint.x));
-                    } else if (coloredPixelSequence) {
-
-                        coloredPixelSequence = false;
-                        pixels.add(row);
-                        row = new LinkedList();
-                    }
-                }
-
-                if (!row.isEmpty()) {
-
-                    pixels.add(row);
-                    row = new LinkedList();
-                }
-
-                coloredPixelSequence = false;
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-            System.out.println("getFigureAreaPixels Exception");
-        }
-        
-        return pixels;
-    }
-
-    private Triangle triangulateTopRight(int yy, int xx, int dimension) {
-
-        Triangle triangle = null;
-
-        int i = 0;
-
-        boolean topRightCorner = true;
-
-        outerloop:
-        for (int y = yy; y < yy + dimension; ++y) {
-
-            for (int x = xx + i; x < xx + dimension; ++x) {
-
-                if (paintedImage.getRGB(x, y) != ObjInnerColor) {
-
-                    topRightCorner = false;
-                    break outerloop;
-                }
-            }
-
-            ++i;
-        }
-
-        if (topRightCorner) {
-
-            triangle = new Triangle(new Point(yy - midPoint.y, xx - midPoint.x), new Point(yy - midPoint.y, xx + dimension - midPoint.x),
-                    new Point(yy + dimension - midPoint.y, xx + dimension - midPoint.x));
-
-            if (!triangle.topRight()) {
-
-                System.out.println("Error, triangle not top right");
-            }
-        }
-
-        return triangle;
-    }
-
-    private Triangle triangulateTopLeft(int yy, int xx, int dimension) {
-
-        Triangle triangle = null;
-
-        int i = 0;
-
-        boolean topLeftCorner = true;
-
-        for (int y = yy; y < yy + dimension; ++y) {
-
-            for (int x = xx; x < xx + dimension - i; ++x) {
-
-                if (paintedImage.getRGB(x, y) != ObjInnerColor) {
-
-                    topLeftCorner = false;
-                    break;
-                }
-            }
-
-            ++i;
-        }
-
-        if (topLeftCorner) {
-
-            //triangle = new Triangle(new Point(yy-midPoint.y, xx-midPoint.x), new Point(yy-midPoint.y, xx+dimension-midPoint.x),
-            //new Point(yy+dimension-midPoint.y, xx-midPoint.x));
-            triangle = new Triangle(new Point(yy - midPoint.y, xx - midPoint.x), new Point(yy - midPoint.y, xx + dimension - midPoint.x),
-                    new Point(yy + dimension - midPoint.y, xx - midPoint.x));
-
-            if (!triangle.topLeft()) {
-
-                System.out.println("Error, triangle not top left");
-            }
-        }
-
-        return triangle;
-    }
-
-    private Triangle triangulateBotRight(int yy, int xx, int dimension) {
-
-        Triangle triangle = null;
-
-        int i = dimension - 2;
-
-        boolean botRightCorner = true;
-
-        for (int y = yy; y < yy + dimension; ++y) {
-
-            for (int x = xx + dimension - 1; x > xx + i; --x) {
-
-                if (paintedImage.getRGB(x, y) != ObjInnerColor) {
-
-                    botRightCorner = false;
-                    break;
-                }
-            }
-
-            --i;
-        }
-
-        if (botRightCorner) {
-
-            triangle = new Triangle(new Point(yy - midPoint.y, xx + dimension - midPoint.x), new Point(yy + dimension - midPoint.y, xx - midPoint.x),
-                    new Point(yy + dimension - midPoint.y, xx + dimension - midPoint.x));
-
-            if (!triangle.botRight()) {
-
-                System.out.println("Error, triangle not bot right");
-            }
-        }
-
-        return triangle;
-    }
-
-    private Triangle triangulateBotLeft(int yy, int xx, int dimension) {
-
-        Triangle triangle = null;
-
-        int i = 1;
-
-        boolean botLeftCorner = true;
-
-        outerloop:
-        for (int y = yy; y < yy + dimension; ++y) {
-
-            for (int x = xx; x < xx + i; ++x) {
-
-                if (paintedImage.getRGB(x, y) != ObjInnerColor) {
-
-                    botLeftCorner = false;
-                    break outerloop;
-                }
-            }
-
-            ++i;
-        }
-
-        if (botLeftCorner) {
-
-            triangle = new Triangle(new Point(yy - midPoint.y, xx - midPoint.x), new Point(yy + dimension - midPoint.y, xx - midPoint.x),
-                    new Point(yy + dimension - midPoint.y, xx + dimension - midPoint.x));
-
-            if (!triangle.botLeft()) {
-
-                System.out.println("Error, triangle not bot left");
-            }
-        }
-
-        return triangle;
-    }
-
+    */
     public void exportPaintedFigure(String location) {
 
         try {
@@ -523,34 +298,118 @@ public class ImageScanner {
         }
     }
     
-    public void printTriangles(LinkedList<LinkedList<Triangle>> triangles){
+    private void calculateDimensions(){
+        
+        maxY = -1;
+        minY = originalImage.getHeight() - 1;
+        maxX = -1;
+        minX = originalImage.getWidth() - 1;
+
+            for (int y = 0; y < originalImage.getHeight(); ++y) {
+
+                for (int x = 0; x < originalImage.getWidth(); ++x) {
+
+                    int pixelColor = originalImage.getRGB(x, y);
+
+                    if (pixelColor == ObjContourColor) {
+
+                        if (maxY < y) {
+                            maxY = y;
+                        }
+
+                        if (minY > y) {
+                            minY = y;
+                        }
+
+                        if (maxX < x) {
+                            maxX = x;
+                        }
+
+                        if (minX > x) {
+                            minX = x;
+                        }
+                    }
+                }
+            }
+
+        width = maxX - minX;
+        height = maxY - minY;
+    }
+    
+    private Point findColor(int base_y, int base_x, int color){
+        
+        for (int y = base_y; y < paintedImage.getHeight(); ++y){
+            
+            for (int x = base_x; x < paintedImage.getWidth(); ++x){
+                
+                if (paintedImage.getRGB(x, y) == color)
+                    return new Point(y, x);
+            }
+        }
+        
+        return null;
+    }
+    
+    private void fillObject(int y, int x) {
+        
+        int pixelColor = paintedImage.getRGB(x, y);
+
+        if (pixelColor != ObjContourColor && pixelColor != ObjInnerColor) {
+
+            paintedImage.setRGB(x, y, ObjInnerColor);
+            //System.out.println("empty pixel " + y + ", " + x);
+        } else return;
+        
+
+        if (y - 1 >= 0) {
+
+            fillObject(y - 1, x);
+        }
+
+        if (y + 1 < paintedImage.getHeight()) {
+
+            fillObject(y + 1, x);
+        }
+
+        if (x - 1 >= 0) {
+
+            fillObject(y, x - 1);
+        }
+
+        if (x + 1 < paintedImage.getWidth()) {
+
+            fillObject(y, x + 1);
+        }
+    }
+    
+    public static void printTriangles(LinkedList<LinkedList<Triangle>> triangles){
         
         int i = 0;
         int k = 0;
         
         Iterator<LinkedList<Triangle>> rowIt = triangles.iterator();
         outerloop:
-            while ( rowIt.hasNext() ){
+        while ( rowIt.hasNext() ){
 
-                LinkedList<Triangle> row = rowIt.next();
+            LinkedList<Triangle> row = rowIt.next();
 
-                Iterator<Triangle> triangleIt = row.iterator();
-                //outerloop:
-                while ( triangleIt.hasNext() ){
+            Iterator<Triangle> triangleIt = row.iterator();
+            //outerloop:
+            while ( triangleIt.hasNext() ){
 
-                    Triangle triangle = triangleIt.next();
+                Triangle triangle = triangleIt.next();
                     
-                    System.out.println("<"+triangle.p1.x+", "+triangle.p1.y+", "+triangle.p1.z+">, ");
-                    System.out.println("<"+triangle.p2.x+", "+triangle.p2.y+", "+triangle.p2.z+">, ");
-                    System.out.println("<"+triangle.p3.x+", "+triangle.p3.y+", "+triangle.p3.z+">}\n");
-                    ++k;
-                    if (k > 10)
-                        break outerloop;
+                System.out.println("<"+triangle.p1.x+", "+triangle.p1.y+", "+triangle.p1.z+">, ");
+                System.out.println("<"+triangle.p2.x+", "+triangle.p2.y+", "+triangle.p2.z+">, ");
+                System.out.println("<"+triangle.p3.x+", "+triangle.p3.y+", "+triangle.p3.z+">}\n");
+                ++k;
+                if (k > 10)
+                    break outerloop;
                         
-                }
-                ++i;
-                if ( i > 25)
-                    return;
             }
+            ++i;
+            if ( i > 25)
+                return;
+        }
     }
 }

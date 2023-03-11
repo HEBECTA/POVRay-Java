@@ -51,7 +51,7 @@ public class SceneGenerator {
     }
     
     
-    public void generatePixelsScene(String inputLocation, String outputLocation, float pixelRadius){
+    public void generateFigureContourScene(String inputLocation, String outputLocation, float pixelRadius){
         
         try {
 
@@ -65,26 +65,32 @@ public class SceneGenerator {
 
             myWriter.write("\nunion{\n");  
             
-            Iterator<LinkedList<Point>> rowIt = figureData.contourPixels.iterator();
+            Iterator<LinkedList<LinkedList<Point>>> rowsIt = figureData.contourPixels.iterator();
             
             int x = 0;
             int y = 0;
             
-            while ( rowIt.hasNext() ){
+            while ( rowsIt.hasNext() ){
                 
                 ++y;
                 
-                LinkedList<Point> row = rowIt.next();
+                LinkedList<LinkedList<Point>> rows = rowsIt.next();
 
-                Iterator<Point> pointIt = row.iterator();
+                Iterator<LinkedList<Point>> rowLinesIt = rows.iterator();
 
-                while ( pointIt.hasNext() ){
+                while ( rowLinesIt.hasNext() ){
                     
-                    ++x;
-
-                    Point point = pointIt.next();
+                    LinkedList<Point> rowLines = rowLinesIt.next();
                     
-                    if ( y % 2 == 0 && x % 2 == 0){
+                    Iterator<Point> linePixelsIt = rowLines.iterator();
+                    
+                    while ( linePixelsIt.hasNext() ){
+                        
+                        ++x;
+
+                        Point point = linePixelsIt.next();
+                        
+                        if ( y % 2 == 0 && x % 2 == 0){
                             
                             myWriter.write("sphere{<"+point.x+","+point.y+",0>,"+pixelRadius);
                             myWriter.write("pigment{Red}}\n");
@@ -107,6 +113,7 @@ public class SceneGenerator {
                             myWriter.write("sphere{<"+point.x+","+point.y+",0>,"+pixelRadius);
                             myWriter.write("pigment{Yellow}}\n");
                         }
+                    }
                 }
             
             }
@@ -131,7 +138,94 @@ public class SceneGenerator {
         executePovRay(inputLocation, outputLocation);
     }
     
-    public void generateFlatFigureScene(String inputLocation, String outputLocation){
+    public void generateFigureAreaPixelsScene(String inputLocation, String outputLocation, float pixelRadius){
+        
+        try {
+
+            FileWriter myWriter = new FileWriter(inputLocation);
+
+            myWriter.write("#include \"colors.inc\"\n#include \"textures.inc\"\n#include \"shapes.inc\"\n#include \"metals.inc\"\n#include \"glass.inc\"\n#include \"woods.inc\"\n"); 
+            myWriter.write(cameraSettings);
+ 
+            myWriter.write(lightSettings);
+            myWriter.write(floorSettings);          
+
+            myWriter.write("\nunion{\n");  
+            
+            Iterator<LinkedList<LinkedList<Point>>> rowsIt = figureData.flatAreaPixels.iterator();
+            
+            int x = 0;
+            int y = 0;
+            
+            while ( rowsIt.hasNext() ){
+                
+                ++y;
+                
+                LinkedList<LinkedList<Point>> rows = rowsIt.next();
+
+                Iterator<LinkedList<Point>> rowLinesIt = rows.iterator();
+
+                while ( rowLinesIt.hasNext() ){
+                    
+                    LinkedList<Point> rowLines = rowLinesIt.next();
+                    
+                    Iterator<Point> linePixelsIt = rowLines.iterator();
+                    
+                    while ( linePixelsIt.hasNext() ){
+                        
+                        ++x;
+
+                        Point point = linePixelsIt.next();
+                        
+                        if ( y % 2 == 0 && x % 2 == 0){
+                            
+                            myWriter.write("sphere{<"+point.x+","+point.y+",0>,"+pixelRadius);
+                            myWriter.write("pigment{Red}}\n");
+                        }
+                        
+                        else if (y % 2 == 1 && x % 2 == 0){
+                            
+                            myWriter.write("sphere{<"+point.x+","+point.y+",0>,"+pixelRadius);
+                            myWriter.write("pigment{Green}}\n");
+                        }
+                        
+                        else if (y % 2 == 0 && x % 2 == 1){
+                            
+                            myWriter.write("sphere{<"+point.x+","+point.y+",0>,"+pixelRadius);
+                            myWriter.write("pigment{Blue}}\n");
+                        }
+                        
+                        else {
+                            
+                            myWriter.write("sphere{<"+point.x+","+point.y+",0>,"+pixelRadius);
+                            myWriter.write("pigment{Yellow}}\n");
+                        }
+                    }
+                }
+            
+            }
+            
+            myWriter.write("\n"+transformationsSettings+"\n");  
+            
+            myWriter.write("\n}\n");  
+
+            myWriter.write("\n");
+            
+            myWriter.close();
+        }
+        catch ( Exception e){
+            
+            System.out.println("Exception generatePixelsScene myWriter");
+            
+            e.printStackTrace();
+            
+            return;
+        }
+        
+        executePovRay(inputLocation, outputLocation);
+    }
+    /*
+    public void generateFlatTrianglesScene(String inputLocation, String outputLocation){
         
         try {
 
@@ -185,7 +279,7 @@ public class SceneGenerator {
         executePovRay(inputLocation, outputLocation);
     }
     
-    public void generateInflatedFigureScene(String inputLocation, String outputLocation){
+    public void generateInflatedTrianglesScene(String inputLocation, String outputLocation){
         
         try {
 
@@ -232,14 +326,14 @@ public class SceneGenerator {
         
         executePovRay(inputLocation, outputLocation);
     }
-    
+    */
     private void executePovRay(String inputLocation, String outputLocation){
         
             try {
                 System.out.println("Opening povray");
                 Runtime runTime = Runtime.getRuntime();
                 System.out.println("Read from " + inputLocation + " write to " + outputLocation);
-                Process process = runTime.exec("povray +I" + inputLocation + " +V +W600 +H480 +O" + outputLocation);
+                Process process = runTime.exec("povray +I" + inputLocation + " +V +W1280 +H720 +O" + outputLocation);
                 synchronized (process){ 
                     try {
                         //Thread.sleep(6000);

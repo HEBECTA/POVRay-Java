@@ -34,22 +34,26 @@ public class Main {
     
     FileOperation fileHandler;
     
-    private final String inputImage = "/home/gugu/Pictures/bak/kursinis.png";
-    private final String pixelsImage = "/home/gugu/Pictures/bak/pixels.png";
-    private final String paintedImage = "/home/gugu/Pictures/bak/paintedImage.png";
-    private final String filledImage = "/home/gugu/Pictures/bak/filled.png";
-    private final String inflatedImage = "/home/gugu/Pictures/bak/inflated.png";
+    private final String inputImage = "/home/gugu/Pictures/bak/input.png";
     
-    private final String pixelsImagePovCode = "/home/gugu/Pictures/bak/pixels.pov";
-    private final String filledImagePovCode = "/home/gugu/Pictures/bak/filled.pov";
-    private final String inflatedImagePovCode = "/home/gugu/Pictures/bak/inflated.pov";
+    private final String contourImage = "/home/gugu/Pictures/bak/contour.png";
+    private final String paintedImage = "/home/gugu/Pictures/bak/paintedImage.png";
+    private final String flatAreaPixelsImage = "/home/gugu/Pictures/bak/flatAreaPixels.png";
+    private final String flatTriangulatedImage = "/home/gugu/Pictures/bak/flatTriangulated.png";
+    private final String inflatedTriangulatedImage = "/home/gugu/Pictures/bak/inflatedTriangulated.png";
+    
+    private final String pixelsImagePovCode = "/home/gugu/Pictures/bak/contour.pov";
+    private final String flatAreaPixelsPovCode = "/home/gugu/Pictures/bak/flatAreaPixels.pov";
+    private final String filledImagePovCode = "/home/gugu/Pictures/bak/flatTriangulated.pov";
+    private final String inflatedImagePovCode = "/home/gugu/Pictures/bak/inflatedTriangulated.pov";
     
     JPanel povRaySettingsTab;
-    JPanel paintImageTab;
+    JPanel inputImageTab;
     JPanel paintedImageTab;
-    JPanel pixelsImageTab;
-    JPanel filledImageTab;
-    JPanel inflatedImageTab;
+    JPanel contourImageTab;
+    JPanel flatAreaPixelsImageTab;
+    JPanel flatTriangulatedImageTab;
+    JPanel inflatedTriangulatedImageTab;
     
     ImageScanner imageScanner;
     SceneGenerator sceneWriter;
@@ -66,7 +70,7 @@ public class Main {
         generator3D = new Object3D();
         
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1200, 650);
+        frame.setSize(1440, 900);
         frame.setTitle("POV Ray");
         frame.setLocationRelativeTo(null);
         
@@ -78,19 +82,21 @@ public class Main {
         
         
         povRaySettingsTab = new PovRaySettings();
-        paintImageTab = new DisplayImage(inputImage);
+        inputImageTab = new DisplayImage(inputImage);
         paintedImageTab = new DisplayImage(paintedImage);
-        pixelsImageTab = new DisplayImage(pixelsImage);
-        filledImageTab = new DisplayImage(filledImage);
-        inflatedImageTab = new DisplayImage(inflatedImage);
+        contourImageTab = new DisplayImage(contourImage);
+        flatAreaPixelsImageTab = new DisplayImage(flatAreaPixelsImage);
+        flatTriangulatedImageTab = new DisplayImage(flatTriangulatedImage);
+        inflatedTriangulatedImageTab = new DisplayImage(inflatedTriangulatedImage);
         tabbedPane = new JTabbedPane();
         
         tabbedPane.add("Pov Ray scene settings", povRaySettingsTab);
-        tabbedPane.add("preview paint image", paintImageTab);
+        tabbedPane.add("preview input image", inputImageTab);
         tabbedPane.add("preview painted image", paintedImageTab);
-        tabbedPane.add("preview generated pixels", pixelsImageTab);
-        tabbedPane.add("preview filled object", filledImageTab);
-        tabbedPane.add("preview inflated object", inflatedImageTab);
+        tabbedPane.add("preview contour pixels", contourImageTab);
+        tabbedPane.add("preview flat area pixels", flatAreaPixelsImageTab);
+        tabbedPane.add("preview flat triangulated object", flatTriangulatedImageTab);
+        tabbedPane.add("preview inflated triangulated object", inflatedTriangulatedImageTab);
         
         frame.setJMenuBar(menu);
         frame.add(toolBar, BorderLayout.NORTH);
@@ -142,33 +148,34 @@ public class Main {
                 return;
             }
             imageScanner.exportPaintedFigure(paintedImage);
-            int traingleSize = 2;
-            int inflationDepth = 30;
+            
+            
+            int traingleSize = 10;
+            int inflationDepth = 80;
             data = imageScanner.getFigureData(traingleSize);
-            
-            imageScanner.printTriangles(data.flatTriangles);
-            
+ 
             generator3D.setFigureData(data);
-            data.inflatedTriangles = generator3D.getInflatedFigure(inflationDepth);
-            imageScanner.printTriangles(data.flatTriangles);
-            sceneWriter.setFigureData(data);
+            //data.inflatedTriangles = generator3D.getInflatedFigure(inflationDepth);
+            data.inflatedFigureAreaPixels = generator3D.getInflatedPixelsList(inflationDepth);
+            data.translateFigureData(0, 0, 0);
             
+            sceneWriter.setFigureData(data);
             sceneWriter.setCameraSettings(cameraSettings);
             sceneWriter.setLightSettings(lightSettings);
             sceneWriter.setFloorSettings(floorSettings);
             sceneWriter.setTransformationSettings(transformationSettings);
-            sceneWriter.generatePixelsScene(pixelsImagePovCode, pixelsImage, 0.5f);
-            sceneWriter.generateFlatFigureScene(filledImagePovCode, filledImage);
-            sceneWriter.generateInflatedFigureScene(inflatedImagePovCode, inflatedImage);
             
-            System.out.println("Tas pats triangles");
-            imageScanner.printTriangles(sceneWriter.figureData.flatTriangles);
+            sceneWriter.generateFigureContourScene(pixelsImagePovCode, contourImage, 0.5f);
+            sceneWriter.generateFigureAreaPixelsScene(flatAreaPixelsPovCode, flatAreaPixelsImage, 0.5f);
+            //sceneWriter.generateFlatTrianglesScene(filledImagePovCode, flatTriangulatedImage);
+            //sceneWriter.generateInflatedTrianglesScene(inflatedImagePovCode, inflatedTriangulatedImage);
             
-            paintImageTab.repaint();
+            inputImageTab.repaint();
             paintedImageTab.repaint();
-            pixelsImageTab.repaint();
-            filledImageTab.repaint();
-            inflatedImageTab.repaint();
+            contourImageTab.repaint();
+            flatAreaPixelsImageTab.repaint();
+            //flatTriangulatedImageTab.repaint();
+            //inflatedTriangulatedImageTab.repaint();
             
         } catch (Exception e){
             e.printStackTrace();

@@ -19,14 +19,12 @@ import java.util.LinkedList;
  */
 public class Object3D {
     
-    private FigureData figureData;
+    private LinkedList<LinkedList<LinkedList<Point>>> areaPixels;
+    //private LinkedList<LinkedList<Triangle>> triangles;
     
-    //private LinkedList<LinkedList<Point>> pixels;
-    private LinkedList<LinkedList<Triangle>> triangles;
-    
-    LinkedList<Triangle> finalTriangles;
+    //LinkedList<Triangle> finalTriangles;
    
-    Matrix matrix;
+    //Matrix matrix;
     
     public int width;
     
@@ -34,15 +32,138 @@ public class Object3D {
         
     }
     
+    public void setFigureData(FigureData figureData){
+        
+        width = figureData.width;
+        //triangles = copyLinkedList(figureData.flatTriangles);
+        areaPixels = copyLinkedListPixels(figureData.flatAreaPixels);
+    }
+    
+    public LinkedList<LinkedList<LinkedList<Point>>> getInflatedPixelsList(float dept){
+    
+        LinkedList<LinkedList<LinkedList<Point>>> inflatedPixels = new LinkedList<>();
+        
+        Iterator<LinkedList<LinkedList<Point>>> rowsIt = areaPixels.iterator();
+        
+        while ( rowsIt.hasNext() ){
+        
+            LinkedList<LinkedList<Point>> inflatedRows = new LinkedList<>();
+
+            //LinkedList<LinkedList<Point>> rows = rowsIt.next();
+            Iterator<LinkedList<Point>> rowLinesIt = rowsIt.next().iterator();
+            
+            while ( rowLinesIt.hasNext() ){
+                    
+                    LinkedList<Point> rowLines = rowLinesIt.next();
+                    Iterator<Point> linePixelsIt = rowLines.iterator();
+                    
+                    //if (pointsRowList.size() < 3) // no inflation for contour points
+                    //continue;
+            
+                    Point firstPoint = rowLines.getFirst();
+                    Point lastPoint = rowLines.getLast();
+
+                    float rowLength = lastPoint.x - firstPoint.x;
+
+                    float inflationDept = (rowLength * dept) / width;
+                    float scale = (float)Math.PI / rowLength;
+
+                    LinkedList<Point> inflatedRow = new LinkedList<>();
+                    
+                    while (linePixelsIt.hasNext()){
+                        
+                       Point point = linePixelsIt.next();
+                
+                        float inflatedZ = (float)(Math.round((Math.sin( (point.x - firstPoint.x) * scale ) * inflationDept) * 100000d) / 100000d);
+                        //System.out.println("z " + inflatedZ);
+                        inflatedRow.add(new Point(point.y, point.x, inflatedZ));
+                    }
+                    
+                    inflatedRows.add(inflatedRow);
+            }
+            
+            inflatedPixels.add(inflatedRows);
+            
+            //if (pointsRowList.size() < 3) // no inflation for contour points
+                //continue;
+            
+            //Point firstPoint = pointsRowList.getFirst();
+            //Point lastPoint = pointsRowList.getLast();
+
+            //float rowLength = lastPoint.x - firstPoint.x;
+            
+            //float inflationDept = (rowLength * dept) / width;
+            //float scale = (float)Math.PI / rowLength;
+            
+            //LinkedList<Point> inflatedRow = new LinkedList<>();
+            
+            //while (pointsIt.hasNext()){
+                
+                //Point point = pointsIt.next();
+                
+                //float inflatedZ = (float)(Math.round((Math.sin( (point.x - firstPoint.x) * scale ) * inflationDept) * 100000d) / 100000d);
+                //System.out.println("z " + inflatedZ);
+                //inflatedRow.add(new Point(point.y, point.x, inflatedZ));
+            //}
+            //System.out.println("* ");
+            //System.out.println("* ");
+            
+            //inflatedPixels.add(inflatedRow);
+        }
+        
+        return inflatedPixels;
+    }
+    
+    private LinkedList<LinkedList<LinkedList<Point>>> copyLinkedListPixels(LinkedList<LinkedList<LinkedList<Point>>> list){
+        
+        LinkedList<LinkedList<LinkedList<Point>>> retList = new LinkedList<>();
+        
+        Iterator<LinkedList<LinkedList<Point>>> rowsIt = list.iterator();
+        
+            while ( rowsIt.hasNext() ){
+                
+                LinkedList<LinkedList<Point>> retRows = new LinkedList<>();
+
+                LinkedList<LinkedList<Point>> rows = rowsIt.next();
+
+                Iterator<LinkedList<Point>> rowLinesIt = rows.iterator();
+  
+                while ( rowLinesIt.hasNext() ){
+                    
+                    LinkedList<Point> retRowLines = new LinkedList<>();
+                    
+                    LinkedList<Point> rowLines = rowLinesIt.next();
+                    
+                    Iterator<Point> linePixelsIt = rowLines.iterator();
+                    
+                    while (linePixelsIt.hasNext()){
+                        
+                        Point point = linePixelsIt.next();
+                    
+                        retRowLines.add(new Point(point));
+                    }
+                    
+                    retRows.add(retRowLines);
+                }
+                
+                retList.add(retRows);
+            }
+            
+        return retList;
+    }
+    
+    /*
     public Object3D(LinkedList<LinkedList<Triangle>> triangles, int width){
         
-        this.triangles = triangles;
+        //this.triangles = triangles;
         
-        this.matrix = new Matrix();
+        //this.matrix = new Matrix();
         
         this.width = width;
     }
-    
+    */
+   
+    /*
     public Object3D(LinkedList<LinkedList<Point>> points, float dept, int width){
             
         triangles = new LinkedList<>();
@@ -89,15 +210,49 @@ public class Object3D {
             triangles.add(trianglesRow);
         }
     }
+    */
     
-    public void setFigureData(FigureData figureData){
+    /*
+    public LinkedList<Triangle> getInlineInflatedFigure(float dept){
         
-        //this.figureData = figureData;
-        width = figureData.width;
-        //pixels = figureData.figureAreaPixels;
-        triangles = copyLinkedList(figureData.flatTriangles);  
+        LinkedList<LinkedList<Point>> inflatedPixels = getInflatetedPixelsList(dept);
+        
+        LinkedList<Triangle> figure = new LinkedList<Triangle>();
+        
+        Iterator<LinkedList<Point>> listRowsIt = areaPixels.iterator();
+        
+        while ( listRowsIt.hasNext() ){
+        
+            LinkedList<Point> pointsRowList = listRowsIt.next();
+            Iterator<Point> pointsIt = pointsRowList.iterator();
+            
+            if (pointsRowList.size() < 3) // no inflation for contour points
+                continue;
+            
+            Point firstPoint = pointsRowList.getFirst();
+            Point lastPoint = pointsRowList.getLast();
+                
+            float rowLength = lastPoint.x - firstPoint.x;
+            
+            float Dept = (rowLength * dept) / width;
+            float scale = (float)Math.PI / rowLength;
+            
+            while (pointsIt.hasNext()){
+                
+                Point point = pointsIt.next();
+                
+                point.z = (float)Math.sin( (point.x - firstPoint.x) * scale ) * Dept;
+          
+                //finalTriangles.add(new Triangle(new Point(triangle.p1.y, triangle.p1.x, triangle.p1.z), new Point(triangle.p2.y, triangle.p2.x, triangle.p2.z), 
+                    //new Point(triangle.p3.y, triangle.p3.x, triangle.p3.z)));
+            }
+        }
+        
+        return figure;
     }
+    */
     
+    /*
     public LinkedList<Triangle> getInflatedFigure(float dept){
         
         finalTriangles = new LinkedList();
@@ -388,8 +543,6 @@ public class Object3D {
                     }
                 }
             }
-            
-            System.out.println();
         }
         
         return finalTriangles;
@@ -408,7 +561,7 @@ public class Object3D {
                 LinkedList<Triangle> row = rowIt.next();
 
                 Iterator<Triangle> triangleIt = row.iterator();
-                //outerloop:
+                
                 while ( triangleIt.hasNext() ){
 
                     Triangle triangle = triangleIt.next();
@@ -421,6 +574,9 @@ public class Object3D {
             
         return retList;
     }
+    */
+    
+    
     /*
     public void setFigureAreaPixels(LinkedList<LinkedList<Point>> pixels){
         

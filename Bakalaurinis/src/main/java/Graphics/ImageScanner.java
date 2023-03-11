@@ -58,7 +58,7 @@ public class ImageScanner {
         refreshImage();
     }
     
-    public FigureData getFigureData(int triangleSize){
+    public FigureData getFigureData(){
         
         figureData = new FigureData();
         
@@ -67,7 +67,6 @@ public class ImageScanner {
         figureData.midPoint = getMidPoint();
         figureData.contourPixels = getContourPixels();
         figureData.flatAreaPixels = getFlatAreaPixels();
-        //figureData.flatTriangles = getTriangulatedObject(triangleSize);
         
         return figureData;
     }

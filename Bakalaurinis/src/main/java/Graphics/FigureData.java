@@ -29,7 +29,7 @@ public class FigureData {
         
         translatePixels(0, 0, 0, contourPixels);
         translatePixels(0, 0, 0, flatAreaPixels);
-        translatePixels(0, 0, 0, inflatedFigureAreaPixels);
+        //translatePixels(0, 0, 0, inflatedFigureAreaPixels);
         
         //translateInflatedTriangles(y, x, z);
         //translateFlatTriangles(y, x, z);
@@ -60,6 +60,40 @@ public class FigureData {
                     point.z = (point.z - midPoint.z) + z;
                 }
             }
+        }
+    }
+    
+    public static void printPixels(LinkedList<LinkedList<LinkedList<Point>>> list){
+        
+        Iterator<LinkedList<LinkedList<Point>>> rowsIt = list.iterator();
+            
+        while ( rowsIt.hasNext() ){
+
+            LinkedList<LinkedList<Point>> rows = rowsIt.next();
+
+            Iterator<LinkedList<Point>> rowLinesIt = rows.iterator();
+            
+            System.out.println("Row");
+
+            while ( rowLinesIt.hasNext() ){
+                    
+                LinkedList<Point> rowLines = rowLinesIt.next();
+                    
+                Iterator<Point> linePixelsIt = rowLines.iterator();
+                
+                System.out.println("Line");
+                    
+                while ( linePixelsIt.hasNext() ){
+                       
+                    Point point = linePixelsIt.next();
+                        
+                    System.out.println("Pixel y " + point.y + ", x " + point.x + ", z " + point.z);
+                }
+                
+                System.out.println("");
+            }
+            
+            System.out.println("");
         }
     }
     /*

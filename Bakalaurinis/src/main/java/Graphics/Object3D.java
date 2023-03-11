@@ -19,11 +19,6 @@ import java.util.LinkedList;
  */
 public class Object3D {
     
-    private LinkedList<LinkedList<LinkedList<Point>>> areaPixels;
-    //private LinkedList<LinkedList<Triangle>> triangles;
-    
-    //LinkedList<Triangle> finalTriangles;
-   
     //Matrix matrix;
     
     public int width;
@@ -32,18 +27,16 @@ public class Object3D {
         
     }
     
-    public void setFigureData(FigureData figureData){
+    public void setFigureWidth(int width){
         
-        width = figureData.width;
-        //triangles = copyLinkedList(figureData.flatTriangles);
-        areaPixels = copyLinkedListPixels(figureData.flatAreaPixels);
+        this.width = width;
     }
     
-    public LinkedList<LinkedList<LinkedList<Point>>> getInflatedPixelsList(float dept){
+    public LinkedList<LinkedList<LinkedList<Point>>> getInflatedPixelsList(LinkedList<LinkedList<LinkedList<Point>>> list, float dept){
     
         LinkedList<LinkedList<LinkedList<Point>>> inflatedPixels = new LinkedList<>();
         
-        Iterator<LinkedList<LinkedList<Point>>> rowsIt = areaPixels.iterator();
+        Iterator<LinkedList<LinkedList<Point>>> rowsIt = list.iterator();
         
         while ( rowsIt.hasNext() ){
         

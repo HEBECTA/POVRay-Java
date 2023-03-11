@@ -39,11 +39,13 @@ public class Main {
     private final String contourImage = "/home/gugu/Pictures/bak/contour.png";
     private final String paintedImage = "/home/gugu/Pictures/bak/paintedImage.png";
     private final String flatAreaPixelsImage = "/home/gugu/Pictures/bak/flatAreaPixels.png";
+    private final String inflatedAreaPixelsImage = "/home/gugu/Pictures/bak/inflatedAreaPixels.png";
     private final String flatTriangulatedImage = "/home/gugu/Pictures/bak/flatTriangulated.png";
     private final String inflatedTriangulatedImage = "/home/gugu/Pictures/bak/inflatedTriangulated.png";
     
     private final String pixelsImagePovCode = "/home/gugu/Pictures/bak/contour.pov";
     private final String flatAreaPixelsPovCode = "/home/gugu/Pictures/bak/flatAreaPixels.pov";
+    private final String inflatedAreaPixelsPovCode = "/home/gugu/Pictures/bak/inflatedAreaPixels.pov";
     private final String filledImagePovCode = "/home/gugu/Pictures/bak/flatTriangulated.pov";
     private final String inflatedImagePovCode = "/home/gugu/Pictures/bak/inflatedTriangulated.pov";
     
@@ -52,6 +54,7 @@ public class Main {
     JPanel paintedImageTab;
     JPanel contourImageTab;
     JPanel flatAreaPixelsImageTab;
+    JPanel inflatedAreaPixelsImageTab;
     JPanel flatTriangulatedImageTab;
     JPanel inflatedTriangulatedImageTab;
     
@@ -86,8 +89,9 @@ public class Main {
         paintedImageTab = new DisplayImage(paintedImage);
         contourImageTab = new DisplayImage(contourImage);
         flatAreaPixelsImageTab = new DisplayImage(flatAreaPixelsImage);
-        flatTriangulatedImageTab = new DisplayImage(flatTriangulatedImage);
-        inflatedTriangulatedImageTab = new DisplayImage(inflatedTriangulatedImage);
+        inflatedAreaPixelsImageTab = new DisplayImage(inflatedAreaPixelsImage);
+        //latTriangulatedImageTab = new DisplayImage(flatTriangulatedImage);
+        //inflatedTriangulatedImageTab = new DisplayImage(inflatedTriangulatedImage);
         tabbedPane = new JTabbedPane();
         
         tabbedPane.add("Pov Ray scene settings", povRaySettingsTab);
@@ -95,8 +99,9 @@ public class Main {
         tabbedPane.add("preview painted image", paintedImageTab);
         tabbedPane.add("preview contour pixels", contourImageTab);
         tabbedPane.add("preview flat area pixels", flatAreaPixelsImageTab);
-        tabbedPane.add("preview flat triangulated object", flatTriangulatedImageTab);
-        tabbedPane.add("preview inflated triangulated object", inflatedTriangulatedImageTab);
+        tabbedPane.add("preview inflated area pixels", inflatedAreaPixelsImageTab);
+        //tabbedPane.add("preview flat triangulated object", flatTriangulatedImageTab);
+        //tabbedPane.add("preview inflated triangulated object", inflatedTriangulatedImageTab);
         
         frame.setJMenuBar(menu);
         frame.add(toolBar, BorderLayout.NORTH);
@@ -135,13 +140,11 @@ public class Main {
         
         try {
             
-            FigureData data = new FigureData();
-            
             String cameraSettings = PovRaySettings.cameraText.getText();
             String floorSettings = PovRaySettings.floorText.getText();
             String lightSettings = PovRaySettings.lightText.getText();
             String transformationSettings = PovRaySettings.transformationText.getText();
-                   
+
             if (!imageScanner.refreshImage()){
                     
                 System.out.println("imageScanner.refreshImage failed !");
@@ -149,24 +152,28 @@ public class Main {
             }
             imageScanner.exportPaintedFigure(paintedImage);
             
-            
-            int traingleSize = 10;
+
             int inflationDepth = 80;
-            data = imageScanner.getFigureData(traingleSize);
- 
-            generator3D.setFigureData(data);
-            //data.inflatedTriangles = generator3D.getInflatedFigure(inflationDepth);
-            data.inflatedFigureAreaPixels = generator3D.getInflatedPixelsList(inflationDepth);
+            FigureData data = new FigureData();
+            data = imageScanner.getFigureData();
             data.translateFigureData(0, 0, 0);
             
-            sceneWriter.setFigureData(data);
+
+            generator3D.setFigureWidth(data.width);
+            data.inflatedFigureAreaPixels = generator3D.getInflatedPixelsList(data.flatAreaPixels, inflationDepth);
+            
+            
+            FigureData.printPixels(data.inflatedFigureAreaPixels);
+            
             sceneWriter.setCameraSettings(cameraSettings);
             sceneWriter.setLightSettings(lightSettings);
             sceneWriter.setFloorSettings(floorSettings);
             sceneWriter.setTransformationSettings(transformationSettings);
             
-            sceneWriter.generateFigureContourScene(pixelsImagePovCode, contourImage, 0.5f);
-            sceneWriter.generateFigureAreaPixelsScene(flatAreaPixelsPovCode, flatAreaPixelsImage, 0.5f);
+            
+            sceneWriter.generateFigurePixelsScene(pixelsImagePovCode, contourImage, data.contourPixels, 0.5f);
+            sceneWriter.generateFigurePixelsScene(flatAreaPixelsPovCode, flatAreaPixelsImage, data.flatAreaPixels, 0.5f);
+            sceneWriter.generateFigurePixelsScene(inflatedAreaPixelsPovCode, inflatedAreaPixelsImage, data.inflatedFigureAreaPixels, 0.5f);
             //sceneWriter.generateFlatTrianglesScene(filledImagePovCode, flatTriangulatedImage);
             //sceneWriter.generateInflatedTrianglesScene(inflatedImagePovCode, inflatedTriangulatedImage);
             
@@ -174,6 +181,7 @@ public class Main {
             paintedImageTab.repaint();
             contourImageTab.repaint();
             flatAreaPixelsImageTab.repaint();
+            inflatedAreaPixelsImageTab.repaint();
             //flatTriangulatedImageTab.repaint();
             //inflatedTriangulatedImageTab.repaint();
             

@@ -21,8 +21,10 @@ Naudojimosi instrukcija
 
 Paveiksliukai buvo piešti naudojant Gimp redaktorių. Pirmiausia reikia užkrauti įvesties paveikslėlius, kuriuose yra nupiešta norima išpūsti figūra. Reikia paspausti ant „Load Images“ skilties, kurioje bus tris pasirinkimai:
 
-„FirstMethod1 image“ - skirtas užkrauti paveikslėlį skirtą pirmajam pūtimo metodui, kuris jį apdoros su horizontaliomis linijomis. 
-„FirstMethod2 image“ - skirtas užkrauti paveikslėlį skirtą pirmajam pūtimo metodui, kuris jį apdoros nupiešęs jo vidų ir su kvadratų sutrianguliuojant nupieštus pikselius. 
+„FirstMethod1 image“ - skirtas užkrauti paveikslėlį skirtą pirmajam pūtimo metodui, kuris jį apdoros su horizontaliomis linijomis.
+
+„FirstMethod2 image“ - skirtas užkrauti paveikslėlį skirtą pirmajam pūtimo metodui, kuris jį apdoros nupiešęs jo vidų ir su kvadratų sutrianguliuojant nupieštus pikselius.
+
 „SecondMethod image“ - skirtas užkrauti paveikslėlį skirtą antrajam pūtimo metodui.
 
 
@@ -30,8 +32,11 @@ Mygtukai „first Method 1“, „first Method 2“ ir „second Method“ yra s
 
     
 „Inflation Dept“ - objekto išpūtimo dydis. 
+
 „Relief iteration interval“ - intervalas matuojamas pikseliais, pagal kuri matuojamas atstumas tarp generuojamų karkaso linijų, „Bakalaurinis\data\output-images\flatAreaPixels.png“ pav. atstumas tarp violetinių linijų arba geltonų taškų (skirtas tik antrajam pūtimo metodui).
+
 „Line generating two points precision distance - atstumas tarp dviejų reljefo taškų iš kurių sugeneruojama laikina linija, o jai sukuriamos dvi į skirtingas puses nukreiptos stačios linijos - karkaso linijos, „Bakalaurinis\data\output-images\flatAreaPixels.png“ pav. violetinės linijos (skirtas tik antrajam pūtimo metodui).
+
 „Triangulation precision“ - vienai karkaso linijai generuojamų trikampiams sukurti taškų skaičius, „Bakalaurinis\data\output-images\inflatedAreaPixels.png“ pav. išpūsti pikseliai, viena karkaso linija yra „Bakalaurinis\data\output-images\flatAreaPixels.png“ pav. nuo geltono iki mėlyno taško violetine spalva nupiešta linija (skirtas tik antrajam pūtimo metodui).
 
 
@@ -40,8 +45,12 @@ Sugeneruotus paveikslėlius galima peržiūrėti specialiose skiltyse:
 
     
 „Preview painted image“ - vaizduojama nupiešta figūra (skirtas tik antrajam pūtimo metodui).
+
 „Preview flat area pixels“ - vaizduojamas sugeneruotas neišpūstas figūros karkasas (skirtas tik antrajam pūtimo metodui).
+
 „Preview inflated area pixels“ - vaizduojami iš karkaso sugeneruoti išpūsti pikseliai, kurių viršūnės bus trianguliuojamos (skirtas tik antrajam pūtimo metodui).
+
 „Preview inflated triangulated object“ - vaizduojamas galutinis išpūstas objektas (skirtas tik antrajam pūtimo metodui).
+
 „First method“ - vaizduojamas galutinis išpūstas objektas (skirtas tik pirmojo pūtimo metodui).
 

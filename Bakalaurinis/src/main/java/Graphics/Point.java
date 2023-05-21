@@ -12,19 +12,36 @@ package Graphics;
 public class Point {
     
     public float y, x, z;
+    public int color;
+    public int topColor;
+    public boolean top;
+    public boolean commonTop;
+    public boolean bottom;
+    public boolean contour;
+    
+    public boolean linePoint;
+    public boolean perpendicularLine;
+    public boolean midPoint;
+    public boolean marked4;
+    public boolean tempMarked;
+    
+    public boolean segPOs;
+    public boolean segNEg;
+    
+    public boolean hillStartingPoint;
     
     public Point(Point p){
      
         this.x = p.x;
         this.y = p.y;
         this.z = p.z;
+        
+        this.color = 0;
     }
     
     public Point(float y, float x){
         
-        this.y = y;
-        this.x = x;
-        this.z = 0;
+        this(y, x, 0);
     }
     
     public Point(float y, float x, float z){
@@ -32,6 +49,23 @@ public class Point {
         this.y = y;
         this.x = x;
         this.z = z;
+    }
+    
+    public Point(float y, float x, int color){
+        
+        this(y, x, 0, color);
+    }
+    
+    public Point(float y, float x, float z, int color){
+        
+        this.y = y;
+        this.x = x;
+        this.z = z;
+        
+        this.color = color;
+        
+        this.bottom = false;
+        this.top = false;
     }
     
     public void matrixMult(Matrix m){

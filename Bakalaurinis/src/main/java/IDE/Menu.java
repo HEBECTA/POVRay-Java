@@ -29,6 +29,7 @@ public class Menu extends JMenuBar implements ActionListener {
     Main mainWindow;
     
     JMenu fileMenu;
+    /*
     JMenu editMenu;
     JMenu searchMenu;
     JMenu textMenu;
@@ -39,13 +40,16 @@ public class Menu extends JMenuBar implements ActionListener {
     JMenu toolsMenu;
     JMenu windowMenu;
     JMenu helpMenu;
+    */
     
-    JMenuItem newMenuItem;
-    JMenuItem openMenuItem;
-    JMenuItem saveMenuItem;
+    JMenuItem firstMethodImg1;
+    JMenuItem firstMethodImg2;
+    JMenuItem secondMethodImg;
+
+    /*
     JMenuItem cutMenuItem;
     JMenuItem copyMenuItem;
-    
+    */
     FileOperation fileHandler;
     
     Menu(Main mainWindow, FileOperation fileHandler){
@@ -54,7 +58,8 @@ public class Menu extends JMenuBar implements ActionListener {
         
         this.fileHandler = fileHandler;
         
-        fileMenu = new JMenu("File");
+        fileMenu = new JMenu("Load Images");
+        /*
         editMenu = new JMenu("Edit");
         searchMenu = new JMenu("Search");
         textMenu = new JMenu("Text");
@@ -65,40 +70,42 @@ public class Menu extends JMenuBar implements ActionListener {
         toolsMenu = new JMenu("Tools");
         windowMenu = new JMenu("Window");
         helpMenu = new JMenu("Help");
-        
-        newMenuItem = new JMenuItem("New");
-        newMenuItem.setMnemonic(KeyEvent.VK_N);
-        newMenuItem.setActionCommand("New");
+        */
+        firstMethodImg1 = new JMenuItem("First method1 image");
+        firstMethodImg1.setMnemonic(KeyEvent.VK_N);
+        firstMethodImg1.setActionCommand("img1");
         //createMenuItem(fileNew,KeyEvent.VK_N,fileMenu,KeyEvent.VK_N,this);
 
-        openMenuItem = new JMenuItem("Open");
-        openMenuItem.setActionCommand("Open");
+        firstMethodImg2 = new JMenuItem("First method2 image");
+        firstMethodImg2.setActionCommand("img2");
         
-        saveMenuItem = new JMenuItem("Save");
-        saveMenuItem.setActionCommand("Save");
+        secondMethodImg = new JMenuItem("Second method image");
+        secondMethodImg.setActionCommand("img3");
         
-        
+        /*
         cutMenuItem = new JMenuItem("Cut");
         cutMenuItem.setActionCommand("Cut");
         
         copyMenuItem = new JMenuItem("Copy");
         copyMenuItem.setActionCommand("Copy");
+        */
         
-        
-        fileMenu.add(newMenuItem);
-        fileMenu.add(openMenuItem);
-        fileMenu.add(saveMenuItem);
-        
+        fileMenu.add(firstMethodImg1);
+        fileMenu.add(firstMethodImg2);
+        fileMenu.add(secondMethodImg);
+        /*
         editMenu.add(cutMenuItem);
         editMenu.add(copyMenuItem);
-        
-        newMenuItem.addActionListener(this);
-        openMenuItem.addActionListener(this);
-        saveMenuItem.addActionListener(this);
+        */
+        firstMethodImg1.addActionListener(this);
+        firstMethodImg2.addActionListener(this);
+        secondMethodImg.addActionListener(this);
+        /*
         cutMenuItem.addActionListener(this);
         copyMenuItem.addActionListener(this);
-        
+        */
         this.add(fileMenu);
+        /*
         this.add(editMenu);
         this.add(searchMenu);
         this.add(textMenu);
@@ -109,6 +116,8 @@ public class Menu extends JMenuBar implements ActionListener {
         this.add(toolsMenu);
         this.add(windowMenu);
         this.add(helpMenu);
+        */
+       
     }
     
     @Override
@@ -116,19 +125,23 @@ public class Menu extends JMenuBar implements ActionListener {
         
         String cmdText = e.getActionCommand();
         
-        if (cmdText.equals("New")){
+        if (cmdText.equals("img1")){
             
-            fileHandler.newFile();
+            //fileHandler.newFile();
             
-            mainWindow.tabbedPane.setTitleAt(0, "Untitled !");
+            //mainWindow.tabbedPane.setTitleAt(0, "Untitled !");
+            File file = fileHandler.openFile();
             
+            Main.firstMethod1File = file;
             
         }
         
-        else if (cmdText.equals("Open")) {
+        else if (cmdText.equals("img2")) {
             
             File file = fileHandler.openFile();
             
+            Main.firstMethod2File = file;
+            /*
             mainWindow.tabbedPane.setTitleAt(mainWindow.tabbedPane.getSelectedIndex(), file.getName());
             
             CodeArea txt = (CodeArea)mainWindow.tabbedPane.getSelectedComponent();
@@ -142,8 +155,16 @@ public class Menu extends JMenuBar implements ActionListener {
             }
             catch (Exception ex) {}
             
-            mainWindow.tabbedPane.setSelectedComponent(txt);
+            mainWindow.tabbedPane.setSelectedComponent(txt);*/
         }
+        
+        else if (cmdText.equals("img3")) {
+            
+            File file = fileHandler.openFile();
+            
+            Main.secondMethodFile = file;
+        }
+        
         
     }
     

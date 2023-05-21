@@ -5,9 +5,6 @@
  */
 package Graphics;
 
-import Graphics.Point;
-import java.awt.image.BufferedImage;
-
 /**
  *
  * @author GUGU
@@ -109,149 +106,123 @@ public class Triangle {
         p3.y = -p3.y;
     }
     
-    public static Triangle triangulateTopRight(int yy, int xx, int dimension, BufferedImage image, int color) {
+    public Triangle getInvertedTriangle(){
+     
+        Triangle invertedTriangle = new Triangle(this);
+        
+        invertedTriangle.p1.z = -invertedTriangle.p1.z;
+        invertedTriangle.p2.z = -invertedTriangle.p2.z;
+        invertedTriangle.p3.z = -invertedTriangle.p3.z;
+        
+        return invertedTriangle;
+    }
+    
+    public static Triangle triangulateTopRight(int yy, int xx, int dimension, Point[][] grid, int color) {
 
         Triangle triangle = null;
 
-        int i = 0;
-
-        boolean topRightCorner = true;
-
-        outerloop:
-        for (int y = yy; y < yy + dimension; ++y) {
-
-            for (int x = xx + i; x < xx + dimension; ++x) {
-
-                if (image.getRGB(x, y) != color) {
-
-                    topRightCorner = false;
-                    break outerloop;
-                }
-            }
-
-            ++i;
-        }
-
-        if (topRightCorner) {
-
-            triangle = new Triangle(new Point(yy, xx), new Point(yy, xx + dimension),
-                    new Point(yy + dimension, xx + dimension));
-
-            if (!triangle.topRight()) {
-
-                System.out.println("Error, triangle not top right");
+        for (int i = 0; i < dimension; ++i){
+            
+            for (int k = i; k < dimension; ++k){
+                
+                if (grid[yy - i][xx + k].color != color)
+                    return null;
             }
         }
 
+        Point p1 = new Point(grid[yy][xx].y, grid[yy][xx].x, grid[yy][xx].z);
+        Point p2 = new Point(grid[yy][xx+dimension].y, grid[yy][xx+dimension].x, grid[yy][xx+dimension].z);
+        Point p3 = new Point(grid[yy-dimension][xx+dimension].y, grid[yy-dimension][xx+dimension].x, grid[yy-dimension][xx+dimension].z);
+            
+        triangle = new Triangle(p1, p2, p3);
+            
+        if (!triangle.topRight()) {
+
+            System.out.println("Error, triangle not top right");
+        }
+        
         return triangle;
     }
     
-    public static Triangle triangulateTopLeft(int yy, int xx, int dimension, BufferedImage image, int color) {
+    public static Triangle triangulateTopLeft(int yy, int xx, int dimension, Point[][] grid, int color) {
 
         Triangle triangle = null;
 
-        int i = 0;
+        for (int i = 0; i < dimension; ++i) {
 
-        boolean topLeftCorner = true;
+            for (int k = 0; k < dimension - i; ++k) {
 
-        for (int y = yy; y < yy + dimension; ++y) {
-
-            for (int x = xx; x < xx + dimension - i; ++x) {
-
-                if (image.getRGB(x, y) != color) {
-
-                    topLeftCorner = false;
-                    break;
-                }
-            }
-
-            ++i;
-        }
-
-        if (topLeftCorner) {
-
-            triangle = new Triangle(new Point(yy, xx), new Point(yy, xx + dimension),
-                    new Point(yy + dimension, xx));
-
-            if (!triangle.topLeft()) {
-
-                System.out.println("Error, triangle not top left");
+                if (grid[yy - i][xx + k].color != color)
+                    return null;
             }
         }
 
+        Point p1 = new Point(grid[yy][xx].y, grid[yy][xx].x, grid[yy][xx].z);
+        Point p2 = new Point(grid[yy][xx+dimension].y, grid[yy][xx+dimension].x, grid[yy][xx+dimension].z);
+        Point p3 = new Point(grid[yy-dimension][xx].y, grid[yy-dimension][xx].x, grid[yy-dimension][xx].z);
+            
+        triangle = new Triangle(p1, p2, p3);
+            
+        if (!triangle.topLeft()) {
+
+            System.out.println("Error, triangle not top left");
+        }
+        
         return triangle;
     }
     
-    public static Triangle triangulateBotRight(int yy, int xx, int dimension, BufferedImage image, int color) {
+    public static Triangle triangulateBotRight(int yy, int xx, int dimension, Point[][] grid, int color) {
 
         Triangle triangle = null;
 
-        int i = dimension - 2;
+        for (int i = 0; i < dimension; ++i) {
 
-        boolean botRightCorner = true;
+            for (int k = 0; k < i + 1; ++k) {
 
-        for (int y = yy; y < yy + dimension; ++y) {
-
-            for (int x = xx + dimension - 1; x > xx + i; --x) {
-
-                if (image.getRGB(x, y) != color) {
-
-                    botRightCorner = false;
-                    break;
-                }
+                if (grid[yy - i][xx + dimension - 1 - k].color != color)
+                    return null;
             }
 
-            --i;
         }
+                    
+        Point p1 = new Point(grid[yy][xx + dimension].y, grid[yy][xx + dimension].x, grid[yy][xx + dimension].z);
+        Point p2 = new Point(grid[yy-dimension][xx].y, grid[yy-dimension][xx].x, grid[yy-dimension][xx].z);
+        Point p3 = new Point(grid[yy-dimension][xx+dimension].y, grid[yy-dimension][xx+dimension].x, grid[yy-dimension][xx+dimension].z);
+            
+        triangle = new Triangle(p1, p2, p3);
+                    
+        if (!triangle.botRight()) {
 
-        if (botRightCorner) {
-
-            triangle = new Triangle(new Point(yy, xx + dimension), new Point(yy + dimension, xx),
-                    new Point(yy + dimension, xx + dimension));
-
-            if (!triangle.botRight()) {
-
-                System.out.println("Error, triangle not bot right");
-            }
+            System.out.println("Error, triangle not bot right");
         }
-
+        
         return triangle;
     }
 
-    public static Triangle triangulateBotLeft(int yy, int xx, int dimension, BufferedImage image, int color) {
+    public static Triangle triangulateBotLeft(int yy, int xx, int dimension, Point[][] grid, int color) {
 
         Triangle triangle = null;
 
-        int i = 1;
+        for (int i = 0; i < dimension; ++i) {
 
-        boolean botLeftCorner = true;
+            for (int k = 0; k < i + 1; ++k) {
 
-        outerloop:
-        for (int y = yy; y < yy + dimension; ++y) {
-
-            for (int x = xx; x < xx + i; ++x) {
-
-                if (image.getRGB(x, y) != color) {
-
-                    botLeftCorner = false;
-                    break outerloop;
-                }
-            }
-
-            ++i;
-        }
-
-        if (botLeftCorner) {
-
-            triangle = new Triangle(new Point(yy, xx), new Point(yy + dimension, xx),
-                    new Point(yy + dimension, xx + dimension));
-
-            if (!triangle.botLeft()) {
-
-                System.out.println("Error, triangle not bot left");
+                if (grid[yy - i][xx + k].color != color)
+                    return null;
             }
         }
 
+        Point p1 = new Point(grid[yy][xx].y, grid[yy][xx].x, grid[yy][xx].z);
+        Point p2 = new Point(grid[yy-dimension][xx].y, grid[yy-dimension][xx].x, grid[yy-dimension][xx].z);
+        Point p3 = new Point(grid[yy-dimension][xx+dimension].y, grid[yy-dimension][xx+dimension].x, grid[yy-dimension][xx+dimension].z);
+            
+        triangle = new Triangle(p1, p2, p3);
+                    
+        if (!triangle.botLeft()) {
+
+            System.out.println("Error, triangle not bot left");
+        }
+        
         return triangle;
     }
 }

@@ -18,6 +18,7 @@ import Graphics.Matrix;
 import Graphics.Object3D;
 import java.awt.FlowLayout;
 import java.awt.Graphics2D;
+import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
@@ -62,7 +63,8 @@ public class Toolbar extends JToolBar implements ActionListener {
     JButton firstAlg1;
     JButton secondAlg;
     
-    ImageIcon newIcon;
+    ImageIcon refreshIcon;
+    /*
     ImageIcon openIcon;
     ImageIcon floppyIcon;
     ImageIcon closeIcon;
@@ -72,7 +74,7 @@ public class Toolbar extends JToolBar implements ActionListener {
     ImageIcon showPixelsIcon;
     ImageIcon showFinalIcon;
     ImageIcon refreshIcon;
-    
+    */
     JLabel inflationLabel;
     public static JTextField inflationDept;
     
@@ -88,6 +90,8 @@ public class Toolbar extends JToolBar implements ActionListener {
     Main mainWindow;
     FileOperation fileHandler;        
     
+    //JPanel algorithmSettings;
+    
     Toolbar(Main mainWindow, FileOperation fileHandler){
         
         this.mainWindow = mainWindow;
@@ -97,16 +101,14 @@ public class Toolbar extends JToolBar implements ActionListener {
         
         panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         
-        newIcon = new ImageIcon("/home/gugu/NetBeansProjects/swing/src/main/java/resources/file.png");  
-        openIcon = new ImageIcon("/home/gugu/NetBeansProjects/swing/src/main/java/resources/open.png");
-        floppyIcon = new ImageIcon("/home/gugu/NetBeansProjects/swing/src/main/java/resources/floppy.png");
-        closeIcon = new ImageIcon("/home/gugu/NetBeansProjects/swing/src/main/java/resources/close.png");
+        //GridLayout layout = new GridLayout(2, 3);
         
-        povRaySceneSettingsIcon = new ImageIcon("/home/gugu/NetBeansProjects/swing/src/main/java/resources/queue.png");
-        paintedImgIcon = new ImageIcon("/home/gugu/NetBeansProjects/swing/src/main/java/resources/show.png");
-        showPixelsIcon = new ImageIcon("/home/gugu/NetBeansProjects/swing/src/main/java/resources/sourcefile.bmp");
-        showFinalIcon = new ImageIcon("/home/gugu/NetBeansProjects/swing/src/main/java/resources/run.png");
-        refreshIcon = new ImageIcon("/home/gugu/NetBeansProjects/swing/src/main/java/resources/pause.jpg");
+
+        
+        //algorithmSettings = new JPanel(new GridLayout(0, 2));
+        
+        refreshIcon = new ImageIcon("../src/main/java/icons/refresh.png");  
+
                                     
         //newButton = new JButton(new ImageIcon(getScaledImage(newIcon.getImage(), dimensions, dimensions)));
         //openButton = new JButton(new ImageIcon(getScaledImage(openIcon.getImage(), dimensions, dimensions)));
@@ -132,9 +134,9 @@ public class Toolbar extends JToolBar implements ActionListener {
         
         //povRaySceneSettingsBtn = new JButton(new ImageIcon(getScaledImage(povRaySceneSettingsIcon.getImage(), dimensions, dimensions)));
         //paintedImgBtn = new JButton(new ImageIcon(getScaledImage(paintedImgIcon.getImage(), dimensions, dimensions)));
-        firstAlg2 = new JButton(new ImageIcon(getScaledImage(paintedImgIcon.getImage(), dimensions, dimensions)));
-        firstAlg1 = new JButton(new ImageIcon(getScaledImage(paintedImgIcon.getImage(), dimensions, dimensions)));
-        secondAlg = new JButton(new ImageIcon(getScaledImage(paintedImgIcon.getImage(), dimensions, dimensions)));
+        firstAlg2 = new JButton(new ImageIcon(getScaledImage(refreshIcon.getImage(), dimensions, dimensions)));
+        firstAlg1 = new JButton(new ImageIcon(getScaledImage(refreshIcon.getImage(), dimensions, dimensions)));
+        secondAlg = new JButton(new ImageIcon(getScaledImage(refreshIcon.getImage(), dimensions, dimensions)));
       
         //newButton.setText("New");
         //openButton.setText("Open");
@@ -192,10 +194,25 @@ public class Toolbar extends JToolBar implements ActionListener {
       
         //panel.add(povRaySceneSettingsBtn);
         //panel.add(paintedImgBtn);
+        /*
+        algorithmSettings.add(inflationLabel);
+        algorithmSettings.add(inflationDept);
+        
+        algorithmSettings.add(reliefIterationLabel);
+        algorithmSettings.add(topHillIteration);
+        
+        algorithmSettings.add(linePrecisionLabel);
+        algorithmSettings.add(topHillPrecision);
+        
+        algorithmSettings.add(triangulationPrecisionLabel);
+        algorithmSettings.add(triangulationPrecision);
+*/
         
         panel.add(firstAlg1);
         panel.add(firstAlg2);
         panel.add(secondAlg);
+        
+        //panel.add(algorithmSettings);
         
         
         panel.add(inflationLabel);

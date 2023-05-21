@@ -153,7 +153,7 @@ public class Main {
         frame.add(toolBar, BorderLayout.NORTH);
         frame.add(tabbedPane);
         
-        ImageIcon img = new ImageIcon("/home/gugu/NetBeansProjects/swing/src/main/java/resources/show.png");
+        ImageIcon img = new ImageIcon("../src/main/java/icons/show.png");
        
         frame.setIconImage(img.getImage());
         frame.setVisible(true);

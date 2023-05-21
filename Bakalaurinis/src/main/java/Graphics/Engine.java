@@ -446,7 +446,7 @@ public class Engine {
             figureData.inflatedTriangles.add(new Triangle(seg1.middPoint, seg2.middPoint, seg2.negPoint));
         }
     }
-    
+    /*
     private void triangulate(){
         
         figureData.inflatedTriangles = new LinkedList<>();
@@ -548,7 +548,7 @@ public class Engine {
             ++i;
         }
     }
-    
+    */
     private void generateVectors(){
         
         LinkedList<Point> terrainStartPoints = findTerrainStartingPoints();
@@ -715,7 +715,7 @@ public class Engine {
         
         return startPoints;
     }
-    
+    /*
     private LinkedList<LinkedList<Point>> returnJointTerrainLines(LinkedList<LinkedList<Point>> terrainLines){
         
         LinkedList<LinkedList<Point>> jointTerrainLines = new LinkedList<>();
@@ -770,7 +770,7 @@ public class Engine {
         
         return jointTerrainLines;
     }
-  
+  */
     private LinkedList<Point> generateLine(Point p){
 
         LinkedList<Point> line = new LinkedList<>();

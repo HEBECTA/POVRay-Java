@@ -540,7 +540,7 @@ public class SceneGenerator {
 
             myWriter.write("\nmesh\n{\n"); 
             
-            System.out.println("Triangles num " + figureData.inflatedTriangles.size());
+            //System.out.println("Triangles num " + figureData.inflatedTriangles.size());
             
             Iterator<Triangle> trianglesIt = figureData.inflatedTriangles.iterator();
             

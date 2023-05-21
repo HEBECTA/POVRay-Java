@@ -77,8 +77,8 @@ public class ImageScanner {
         
         Point[][] grid = new Point[height][width];
         
-        System.out.println("height " + height + ", width " + width);
-        System.out.println("diagonal " + (int) Math.round(Math.sqrt(height * height + width * width)));
+        //System.out.println("height " + height + ", width " + width);
+        //System.out.println("diagonal " + (int) Math.round(Math.sqrt(height * height + width * width)));
         
         for (int y = 0; y < height; ++y){
             

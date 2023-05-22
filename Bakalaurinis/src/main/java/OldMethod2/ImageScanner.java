@@ -493,7 +493,7 @@ public class ImageScanner {
     }
     
     private void executePovRay(String inputLocation, String outputLocation){
-        
+        /*
         File file1 = new File(inputLocation);
         inputLocation = file1.getAbsolutePath();
         
@@ -516,7 +516,7 @@ public class ImageScanner {
 
         // Get the final path as a string
         inputLocation = resolvedPath.toString();
-        
+        */
             try {
                 System.out.println("Opening povray");
                 Runtime runTime = Runtime.getRuntime();

@@ -623,7 +623,7 @@ public class SceneGenerator {
     }
     
     private void executePovRay(String inputLocation, String outputLocation){
-        
+        /*
         File file1 = new File(inputLocation);
         inputLocation = file1.getAbsolutePath();
         
@@ -646,7 +646,7 @@ public class SceneGenerator {
 
         // Get the final path as a string
         inputLocation = resolvedPath.toString();
-        
+        */
         System.out.println(outputLocation);
         
             try {

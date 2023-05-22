@@ -15,7 +15,7 @@ Taip pat programa gali neveikti, nes POV-Ray konfigūracijos faile (http://www.p
 
 Papildomi failai
 
-Nupiešti įvesties paveiksliukai saugojami „Bakalaurinis\data\input-images“ aplanke. Kiekvienam pūtimo metodui reikia naudoti paveikslėlį, kuris yra nupieštas pagal atitinkamus metodo reikalavimus. Sugeneruoti išpūsto objekto paveikslėliai yra saugojami „Bakalaurinis\data\output-images“ aplanke. Jei užkrauta programa nerodo sugeneruotų paveikslėlių, tai reiškia, kad jie ištrinti. Tokiu atveju reikia juos sugeneruoti, bet programa jų vis vien nerodys. Per nauja užkrauta programa turėtų rodyti šiame aplankale saugomus paveikslėlius. Sugeneruotas POV-Ray paveikslėlių kodas saugojamas „Bakalaurinis\data\generated-pov-ray“.
+Nupiešti įvesties paveiksliukai saugojami „Bakalaurinis\data\input-images“ aplanke. Kiekvienam pūtimo metodui reikia naudoti paveikslėlį, kuris yra nupieštas pagal atitinkamus metodo reikalavimus. Sugeneruoti išpūsto objekto paveikslėliai yra saugojami „Bakalaurinis\data\output-images“ aplanke. Jei užkrauta programa nerodo sugeneruotų paveikslėlių, tai reiškia, kad jie ištrinti. Tokiu atveju reikia juos sugeneruoti, bet programa jų vis vien nerodys. Naujai užkrauta programa turėtų rodyti šiame aplankale saugomus paveikslėlius. Sugeneruotas POV-Ray paveikslėlių kodas saugojamas „Bakalaurinis\data\generated-pov-ray“.
 
 Naudojimosi instrukcija
 
@@ -23,12 +23,12 @@ Paveiksliukai buvo piešti naudojant Gimp redaktorių. Pirmiausia reikia užkrau
 
 „FirstMethod1 image“ - skirtas užkrauti paveikslėlį skirtą pirmajam pūtimo metodui, kuris jį apdoros su horizontaliomis linijomis.
 
-„FirstMethod2 image“ - skirtas užkrauti paveikslėlį skirtą pirmajam pūtimo metodui, kuris jį apdoros nupiešęs jo vidų ir su kvadratų sutrianguliuojant nupieštus pikselius.
+„FirstMethod2 image“ - kirtas užkrauti paveikslėlį skirtą pirmajam pūtimo metodui, kuris jį apdoros nupiešęs jo vidų ir su kvadratu sutrianguliuos nupieštus pikselius
 
 „SecondMethod image“ - skirtas užkrauti paveikslėlį skirtą antrajam pūtimo metodui.
 
 
-Mygtukai „first Method 1“, „first Method 2“ ir „second Method“ yra skirti paleisti norimą metodą. Pov-Ray scene settings sekcijoje galima koreguoti generuojama POV-Ray sceną, pavyzdžiui keisti kameros $z$ lokacijos koordinates, šitaip priartinant arba patolinant vaizdą. Atliekant rotate transformacijas galima sukioti objektą. Keisti algoritmų parmetrus galima specialiuose laukuose:
+Mygtukai „first Method 1“, „first Method 2“ ir „second Method“ yra skirti paleisti norimą metodą. Pov-Ray scene settings sekcijoje galima koreguoti generuojama POV-Ray sceną, pavyzdžiui keisti kameros $z$ lokacijos koordinates, šitaip priartinant arba patolinant vaizdą. Atliekant posūkio (angl. rotate) transformaciją galima sukioti objektą. Keisti algoritmų parmetrus galima specialiuose laukuose:
 
     
 „Inflation Dept“ - objekto išpūtimo dydis. 
